@@ -45,11 +45,48 @@ ddx init
 
 ## Contributing
 
-We welcome contributions! To contribute improvements:
+### Local Development
 
-1. **Via DDx CLI**: Make changes to your local `.ddx/` directory and run `ddx contribute`
-2. **Via GitHub**: Fork this repository, make changes, and submit a pull request
-3. **Via git subtree**: Make changes locally and use `git subtree push` to contribute back
+Clone and install locally to test changes:
+
+```bash
+# Clone the repository
+git clone https://github.com/easel/ddx-library.git
+cd ddx-library
+
+# Test as a local plugin
+claude --plugin-dir .
+
+# Or from another directory
+claude --plugin-dir /path/to/ddx-library
+```
+
+### Plugin Structure
+
+```
+ddx-library/
+├── .claude-plugin/
+│   └── plugin.json      # Plugin manifest
+├── commands/            # Slash commands (/ddx:*)
+├── skills/              # Auto-invoked skills
+├── agents/              # Specialized agents
+└── .mcp.json            # MCP server configs
+```
+
+### Making Changes
+
+- **commands/*.md** - Add or modify slash commands
+- **skills/*/SKILL.md** - Add or modify auto-invoked skills
+- **agents/*.md** - Add or modify specialized agents
+- **workflows/** - Add or modify workflow definitions
+- **prompts/** - Add or modify standalone prompts
+
+### Submitting Changes
+
+1. Fork this repository
+2. Create a branch for your changes
+3. Test locally with `claude --plugin-dir .`
+4. Submit a pull request
 
 ## License
 
