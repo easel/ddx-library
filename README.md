@@ -4,30 +4,22 @@ This repository contains the DDx (Document-Driven Development eXperience) librar
 
 ## Installation
 
-### Claude Code Plugin (Recommended)
+### Claude Code Plugin
 
-Install directly as a Claude Code plugin:
+Install as a Claude Code plugin in two steps:
 
 ```bash
-/plugin install https://github.com/easel/ddx-library
+# Add the repository as a marketplace
+/plugin marketplace add easel/ddx-library
+
+# Install the plugin
+/plugin install library@ddx
 ```
 
 This gives you:
 - **Slash commands**: `/ddx:prd`, `/ddx:code-review`, `/ddx:commit-hooks`, `/ddx:github-actions`, `/ddx:docs`, `/ddx:gitignore`, `/ddx:create-workflow`
 - **HELIX skill**: Auto-invoked TDD workflow guidance during development
 - **Agents**: Systems architect, TDD test engineer, strict code reviewer
-
-### DDx CLI
-
-Alternatively, use the [DDx CLI tool](https://github.com/easel/ddx) for git subtree-based synchronization:
-
-```bash
-# Install DDx CLI
-curl -fsSL https://raw.githubusercontent.com/easel/ddx/main/install.sh | bash
-
-# Initialize in your project
-ddx init
-```
 
 ## Contents
 
@@ -94,5 +86,4 @@ This library is open source software licensed under the MIT License.
 
 ## Related Projects
 
-- [DDx CLI](https://github.com/easel/ddx) - The command-line tool for using this library
 - [HELIX Workflow](./workflows/helix/) - Six-phase AI-assisted development methodology

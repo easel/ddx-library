@@ -1,0 +1,17 @@
+{
+  "name": "ddx",
+  "owner": {
+    "name": "easel"
+  },
+  "metadata": {
+    "description": "DDx Library - Document-Driven Development eXperience plugins"
+  },
+  "plugins": [
+    {
+      "name": "library",
+      "source": "..",
+      "description": "Document-Driven Development eXperience - workflows, prompts, personas, and templates for AI-assisted development",
+      "version": "1.0.0"
+    }
+  ]
+}
