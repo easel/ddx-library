@@ -1,3 +1,13 @@
+## Required Inputs
+- `docs/helix/01-frame/prd.md` - Product Requirements Document for system scope
+- `docs/helix/01-frame/features/FEAT-*.md` - Feature specifications for capabilities to support
+- `docs/helix/01-frame/principles.md` - (Optional) Project principles to guide architecture
+
+## Produced Output
+- `docs/helix/02-design/architecture.md` - System architecture documentation with C4 diagrams
+
+---
+
 # Architecture Documentation Generation Prompt
 
 Create comprehensive architecture documentation that visualizes system structure, components, and relationships using the C4 model and supporting diagrams.
@@ -324,3 +334,14 @@ Architecture documentation enables the Design phase by:
 5. Enabling implementation planning
 
 Remember: Architecture diagrams are communication tools. They should clarify, not complicate. Focus on the essential structures and relationships that matter for understanding and implementing the system.
+
+## Completion Criteria
+- [ ] System Context diagram (C4 Level 1) showing external actors and systems
+- [ ] Container diagram (C4 Level 2) showing major components and technologies
+- [ ] Component diagram (C4 Level 3) for key containers
+- [ ] Data flow diagrams for major workflows
+- [ ] Security boundaries and controls documented
+- [ ] Deployment architecture defined
+- [ ] Quality attributes mapped to architectural decisions
+- [ ] Architecture reviewed by tech lead
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

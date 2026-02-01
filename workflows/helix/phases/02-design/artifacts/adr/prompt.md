@@ -1,3 +1,13 @@
+## Required Inputs
+- `docs/helix/02-design/architecture.md` - System architecture for context
+- `docs/helix/01-frame/prd.md` - Requirements driving the decision
+- Specific architectural question or decision point to document
+
+## Produced Output
+- `docs/helix/02-design/adr/ADR-{number}-{title}.md` - Architecture Decision Record
+
+---
+
 # Architecture Decision Record (ADR) Generation Prompt
 
 Document significant architectural decisions with clear rationale and trade-offs.
@@ -226,3 +236,15 @@ ADRs are for your future self and team members who will wonder:
 - "What were we thinking?"
 
 Good ADRs prevent repeating past mistakes and provide confidence in technical decisions. They're an investment in your team's future productivity and understanding.
+
+## Completion Criteria
+- [ ] Problem/context clearly stated with requirements driving the decision
+- [ ] Constraints documented
+- [ ] Decision stated in active voice with clear rationale
+- [ ] At least 2-3 alternatives considered with genuine pros/cons
+- [ ] Rejection reasons for non-chosen alternatives are clear
+- [ ] Both positive and negative consequences listed
+- [ ] Mitigation strategies for negative consequences included
+- [ ] Success criteria defined for validating the decision
+- [ ] Confidence level appropriate to evidence
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

@@ -1,3 +1,11 @@
+## Required Inputs
+- `docs/helix/01-frame/prd.md` - Product Requirements Document to derive features from
+
+## Produced Output
+- `docs/helix/01-frame/features/FEAT-{number}-{title}.md` - Feature specification file(s)
+
+---
+
 # Specification Generation Prompt
 
 Create a complete feature specification with explicit uncertainty markers.
@@ -69,3 +77,13 @@ Bad:
 - "Use PostgreSQL for data storage" (implementation detail)
 
 Remember: The specification drives everything that follows. Ambiguity here cascades into problems throughout development.
+
+## Completion Criteria
+- [ ] All P0 requirements from PRD have detailed specifications
+- [ ] Problem statement clearly articulates user need
+- [ ] Functional requirements are specific and testable
+- [ ] Non-functional requirements have measurable targets
+- [ ] User stories have clear acceptance criteria
+- [ ] Edge cases identified and documented
+- [ ] Success metrics are measurable
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

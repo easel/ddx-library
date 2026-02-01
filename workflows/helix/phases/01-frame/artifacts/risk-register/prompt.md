@@ -1,3 +1,12 @@
+## Required Inputs
+- `docs/helix/01-frame/prd.md` - Product Requirements Document for scope and context
+- `docs/helix/01-frame/features/FEAT-*.md` - Feature specifications for technical scope
+
+## Produced Output
+- `docs/helix/01-frame/risk-register.md` - Comprehensive risk register
+
+---
+
 # Risk Register Generation Prompt
 
 Create a comprehensive risk register to identify, assess, and plan mitigation for all project risks.
@@ -225,3 +234,14 @@ Risk management is about:
 4. **Opportunity**, not just threats
 
 A good risk register helps the team sleep better at night, knowing they're prepared for challenges ahead.
+
+## Completion Criteria
+- [ ] All major risk categories explored (Technical, Business, Resource, PM, External)
+- [ ] Each risk has a specific owner assigned
+- [ ] Each risk has probability and impact scores (1-5 scale)
+- [ ] High/Critical risks have specific mitigation strategies
+- [ ] Triggers and early warning indicators identified
+- [ ] Review schedule established (weekly, monthly, quarterly)
+- [ ] Escalation criteria defined
+- [ ] Budget impact estimated for high risks
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

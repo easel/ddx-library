@@ -1,3 +1,12 @@
+## Required Inputs
+- `docs/helix/02-design/technical-designs/TD-{number}-{title}.md` - Technical design specifying the interface
+- `docs/helix/02-design/architecture.md` - System architecture for context
+
+## Produced Output
+- `docs/helix/02-design/contracts/API-{number}-{title}.md` - API contract specification
+
+---
+
 # Contract Definition Prompt
 
 Define precise API contracts that will be tested before implementation.
@@ -137,3 +146,15 @@ Example:
 ```
 
 This contract is complete, testable, and user-friendly.
+
+## Completion Criteria
+- [ ] All endpoints/commands documented with full syntax
+- [ ] Input formats specified with validation rules and constraints
+- [ ] Output formats specified for success and all error cases
+- [ ] Exit codes/status codes documented with meanings
+- [ ] Real examples provided with expected output
+- [ ] Performance requirements are testable (specific latency/throughput)
+- [ ] Authentication requirements documented
+- [ ] Versioning strategy clear
+- [ ] All edge cases documented
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

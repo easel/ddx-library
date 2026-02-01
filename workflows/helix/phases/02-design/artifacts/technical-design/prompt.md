@@ -1,3 +1,13 @@
+## Required Inputs
+- `docs/helix/01-frame/user-stories/US-{number}-{title}.md` - User story to design (same number)
+- `docs/helix/02-design/architecture.md` - System architecture for context
+- `docs/helix/01-frame/features/FEAT-{number}-{title}.md` - (Optional) Related feature specification
+
+## Produced Output
+- `docs/helix/02-design/technical-designs/TD-{number}-{title}.md` - Technical design document (matching user story number)
+
+---
+
 # Prompt: Create Technical Design for User Story
 
 You are creating a technical design document for a specific user story. This design should detail HOW to implement the story within the context of the broader solution architecture.
@@ -103,3 +113,15 @@ Your technical design should be:
 - **Safe**: Security and rollback considered
 
 Remember: This design enables a developer to implement exactly what's needed for this user story - no more, no less.
+
+## Completion Criteria
+- [ ] All acceptance criteria from user story mapped to technical implementation
+- [ ] API changes documented with endpoints, methods, and schemas
+- [ ] Data model changes documented with schema definitions
+- [ ] Security considerations addressed (auth, authz, data protection)
+- [ ] Performance implications analyzed
+- [ ] Test scenarios defined for each acceptance criterion
+- [ ] Dependencies on other stories/components identified
+- [ ] Rollback strategy defined
+- [ ] Edge cases documented
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

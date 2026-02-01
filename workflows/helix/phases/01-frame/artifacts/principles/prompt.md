@@ -1,3 +1,12 @@
+## Required Inputs
+- `docs/helix/01-frame/prd.md` - Product Requirements Document for project context
+- Project domain and technical requirements context
+
+## Produced Output
+- `docs/helix/01-frame/principles.md` - Project-specific principles document
+
+---
+
 # Project Principles Generation Prompt
 
 Generate project-specific principles based on the HELIX workflow principles and the SDD methodology.
@@ -47,3 +56,13 @@ These principles will be:
 5. What complexity is actually necessary?
 
 Generate principles that will lead to maintainable, testable, and simple solutions.
+
+## Completion Criteria
+- [ ] Core HELIX principles reviewed and included
+- [ ] Project-specific principles added based on domain requirements
+- [ ] Technology constraints documented as enforceable principles
+- [ ] Each principle is specific and testable (not vague)
+- [ ] Success/failure criteria defined for each principle
+- [ ] Non-negotiable quality requirements identified
+- [ ] Patterns to encourage and mistakes to avoid documented
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

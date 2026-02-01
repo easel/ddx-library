@@ -1,3 +1,13 @@
+## Required Inputs
+- User/stakeholder problem description - The problem to solve or opportunity to address
+- `docs/helix/00-discover/product-vision.md` - (Optional) Product vision if available
+- `docs/helix/00-discover/business-case.md` - (Optional) Business justification if available
+
+## Produced Output
+- `docs/helix/01-frame/prd.md` - The Product Requirements Document
+
+---
+
 # PRD Generation Prompt
 
 Create a comprehensive Product Requirements Document that defines the business vision and requirements.
@@ -109,3 +119,13 @@ The PRD is about **alignment and clarity**. It should answer:
 5. What could go wrong?
 
 A good PRD prevents misalignment, scope creep, and building the wrong thing.
+
+## Completion Criteria
+- [ ] Problem statement clearly defined with user pain points
+- [ ] Success metrics are specific and measurable with baseline and target
+- [ ] Primary persona clearly defined with scenarios
+- [ ] Requirements prioritized using P0/P1/P2 classification
+- [ ] Risks identified with mitigation plans
+- [ ] Scope clearly defined including non-goals
+- [ ] Executive summary written (after all other sections)
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

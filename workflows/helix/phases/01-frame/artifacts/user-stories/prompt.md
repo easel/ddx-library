@@ -1,3 +1,12 @@
+## Required Inputs
+- `docs/helix/01-frame/prd.md` - Product Requirements Document for requirements context
+- `docs/helix/01-frame/features/FEAT-{number}-{title}.md` - Feature specifications to break down
+
+## Produced Output
+- `docs/helix/01-frame/user-stories/US-{number}-{title}.md` - User story file(s)
+
+---
+
 # User Stories Generation Prompt
 
 Create comprehensive user stories with testable acceptance criteria.
@@ -91,3 +100,13 @@ For each story, ask:
 - [ ] Given an item is in my wishlist, when I click "Remove", then it is removed immediately
 
 This story is specific, testable, and delivers clear value.
+
+## Completion Criteria
+- [ ] Each story has a specific user type (not generic "user")
+- [ ] Each story follows "As a... I want... So that..." format
+- [ ] Each story has 3-5 acceptance criteria in Given-When-Then format
+- [ ] Each story has a clear Definition of Done checklist
+- [ ] Stories are prioritized (P0, P1, P2)
+- [ ] Stories are independently deliverable (no unwritten dependencies)
+- [ ] Stories are small enough to complete in one iteration
+- [ ] No `[NEEDS CLARIFICATION]` markers remain
