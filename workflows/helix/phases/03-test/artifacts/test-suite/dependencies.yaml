@@ -1,0 +1,42 @@
+# Test Suite Dependencies
+artifact: test-suite
+prefix: TS
+
+inputs:
+  required:
+    - artifact: test-plan
+      phase: "03-test"
+      prefix: TP
+      same_number: true
+      relationship: "implements test plan as actual tests"
+    - artifact: user-stories
+      phase: "01-frame"
+      prefix: US
+      same_number: true
+      relationship: "tests verify acceptance criteria"
+  optional:
+    - artifact: technical-design
+      phase: "02-design"
+      prefix: TD
+      relationship: "informs test structure"
+
+outputs:
+  produces:
+    - artifact: implementation-plan
+      phase: "04-build"
+      prefix: IP
+      same_number: true
+      relationship: "implementation makes tests pass"
+
+completion:
+  automated_checks:
+    - type: files_exist
+      pattern: "tests/**/*.test.ts"
+    - type: tests_fail
+      description: "All tests must fail (Red phase)"
+    - type: no_markers
+      pattern: "\\[TODO\\]"
+  manual_checks:
+    - "All acceptance criteria have tests"
+    - "Tests are isolated and repeatable"
+    - "Fixtures contain realistic data"
