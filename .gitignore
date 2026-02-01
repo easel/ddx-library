@@ -1,0 +1,8 @@
+# Gas Town workspace artifacts
+.beads/
+.claude-flow/
+.claude/
+.runtime/
+.swarm/
+CLAUDE.md
+state.json
