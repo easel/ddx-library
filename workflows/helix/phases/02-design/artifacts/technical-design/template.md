@@ -1,3 +1,9 @@
+---
+dun:
+  id: TD-XXX
+  depends_on:
+    - US-XXX
+---
 # Technical Design: TD-XXX-[story-name]
 
 *Story-specific technical approach for vertical slice implementation*

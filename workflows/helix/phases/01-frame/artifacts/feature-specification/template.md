@@ -1,3 +1,9 @@
+---
+dun:
+  id: FEAT-XXX
+  depends_on:
+    - helix.prd
+---
 # Feature Specification: [FEAT-XXX] - [Feature Name]
 
 **Feature ID**: FEAT-XXX

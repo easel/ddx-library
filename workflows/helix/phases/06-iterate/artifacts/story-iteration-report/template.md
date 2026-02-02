@@ -1,3 +1,9 @@
+---
+dun:
+  id: IR-XXX
+  depends_on:
+    - DP-XXX
+---
 # Iteration Report: IR-XXX-[story-name]
 
 *Post-deployment metrics and learnings for continuous improvement*

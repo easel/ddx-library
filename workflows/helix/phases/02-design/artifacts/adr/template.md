@@ -1,3 +1,10 @@
+---
+dun:
+  id: ADR-XXX
+  depends_on:
+    - helix.prd
+    - helix.architecture
+---
 # ADR-[NUMBER]: [Title]
 
 | Date | Status | Deciders | Related | Confidence |

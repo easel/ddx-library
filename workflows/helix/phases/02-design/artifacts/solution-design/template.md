@@ -1,3 +1,9 @@
+---
+dun:
+  id: SD-XXX
+  depends_on:
+    - FEAT-XXX
+---
 # Solution Design
 
 *Bridge between business requirements and technical implementation*

@@ -1,3 +1,9 @@
+---
+dun:
+  id: DP-XXX
+  depends_on:
+    - IP-XXX
+---
 # Deployment Plan: DP-XXX-[story-name]
 
 *Rollout strategy for story-level deployment*

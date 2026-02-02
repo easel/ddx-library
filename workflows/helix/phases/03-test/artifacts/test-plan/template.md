@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.test-plan
+  depends_on:
+    - helix.architecture
+---
 # Test Plan
 
 | Project | Version | Date | Status |

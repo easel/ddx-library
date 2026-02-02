@@ -1,3 +1,9 @@
+---
+dun:
+  id: US-XXX
+  depends_on:
+    - FEAT-XXX
+---
 # User Stories for [FEAT-XXX] - [Feature Name]
 
 **Feature**: FEAT-XXX

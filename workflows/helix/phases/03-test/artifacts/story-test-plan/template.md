@@ -1,3 +1,9 @@
+---
+dun:
+  id: TP-XXX
+  depends_on:
+    - TD-XXX
+---
 # Story Test Plan: TP-XXX-[story-name]
 
 *Test specifications for verifying user story implementation*

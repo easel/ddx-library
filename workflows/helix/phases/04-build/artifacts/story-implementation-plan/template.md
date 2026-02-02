@@ -1,3 +1,9 @@
+---
+dun:
+  id: IP-XXX
+  depends_on:
+    - TP-XXX
+---
 # Implementation Plan: IP-XXX-[story-name]
 
 *Step-by-step build plan for making tests pass*

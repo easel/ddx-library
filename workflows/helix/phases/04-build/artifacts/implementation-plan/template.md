@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.implementation-plan
+  depends_on:
+    - helix.test-plan
+---
 # Build Plan
 
 **Project**: [Project Name]
