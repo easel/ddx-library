@@ -1,3 +1,7 @@
+---
+dun:
+  id: helix.workflow
+---
 # HELIX Workflow
 
 A test-driven development workflow with AI-assisted collaboration for building high-quality software iteratively.

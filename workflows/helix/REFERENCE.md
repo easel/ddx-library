@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.workflow.reference
+  depends_on:
+    - helix.workflow
+---
 # HELIX Quick Reference Card
 
 ## 📋 Phase Overview

@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.workflow.principles
+  depends_on:
+    - helix.workflow
+---
 # HELIX Workflow Principles
 
 ## Purpose

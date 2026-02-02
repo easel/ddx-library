@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.workflow.quickstart
+  depends_on:
+    - helix.workflow
+---
 # HELIX Workflow Quick Start Guide
 
 ## 🚀 Getting Started in 5 Minutes

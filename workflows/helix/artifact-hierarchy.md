@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.workflow.artifact-hierarchy
+  depends_on:
+    - helix.workflow
+---
 # HELIX Artifact Hierarchy and Naming Conventions
 
 *Understanding how artifacts flow through the HELIX workflow*

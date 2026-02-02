@@ -1,3 +1,9 @@
+---
+dun:
+  id: helix.workflow.conventions
+  depends_on:
+    - helix.workflow
+---
 # HELIX Workflow Conventions
 
 ## Overview
