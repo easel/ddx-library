@@ -3,6 +3,7 @@ dun:
   id: TD-XXX
   depends_on:
     - US-XXX
+    - ADR-XXX
 ---
 # Technical Design: TD-XXX-[story-name]
 
