@@ -20,6 +20,7 @@ Projects using HELIX should organize their documentation using the `docs/helix/`
 project-root/
 ├── docs/
 │   ├── helix/                  # HELIX phase artifacts
+│   │   ├── parking-lot.md       # Deferred and future work registry
 │   │   ├── 01-frame/          # Problem definition & requirements
 │   │   ├── 02-design/         # Architecture & design decisions
 │   │   ├── 03-test/           # Test strategies & plans
@@ -88,6 +89,14 @@ Each phase directory contains artifacts directly (no `artifacts/` subdirectory):
 ├── improvement-backlog/      # Enhancement ideas
 └── refinements/              # Story refinement logs and tracking
 ```
+
+### Parking Lot Registry
+
+The parking lot is a project-level registry for deferred and future work:
+- **Location**: `docs/helix/parking-lot.md`
+- **Purpose**: Capture deferred work without adding inline sections to core artifacts
+- **Eligibility**: Any HELIX artifact may be parked
+- **Tooling**: Mark parked artifacts with `dun.parking_lot: true` to exclude them from dependency graphs
 
 ## Naming Conventions
 

@@ -16,6 +16,11 @@ The HELIX workflow uses a consistent artifact naming system that enables:
 - **Parallel Development**: Multiple stories in different phases
 - **Clear Organization**: Predictable file locations
 
+The workflow also supports a project-level **Parking Lot** registry at
+`docs/helix/parking-lot.md` for deferred and future work. Any artifact can be
+marked with `dun.parking_lot: true` to keep it out of dependency graphs and
+the main PRD flow while remaining in its normal directory.
+
 ## Artifact Types and Relationships
 
 ### Three Levels of Artifacts

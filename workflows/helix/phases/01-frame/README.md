@@ -106,7 +106,16 @@ Centralized registry of all features:
 - Cross-phase traceability
 - Priority categorization (P0/P1/P2)
 
-#### 6. Stakeholder Map
+#### 6. Parking Lot (Deferred / Future Work)
+**Artifact Location**: `artifacts/parking-lot/`
+**Output Location**: `docs/helix/parking-lot.md`
+
+Registry for deferred and future work:
+- Captures out-of-band items without inline sections in core artifacts
+- Links to parked artifacts that remain in their normal directories
+- Parked artifacts must set `dun.parking_lot: true` in frontmatter
+
+#### 7. Stakeholder Map
 **Artifact Location**: `artifacts/stakeholder-map/`
 **Output Location**: `docs/helix/01-frame/stakeholder-map.md`
 
@@ -117,7 +126,7 @@ Comprehensive stakeholder analysis and engagement planning:
 - Communication and engagement strategies
 - Escalation paths and contact information
 
-#### 7. Risk Register
+#### 8. Risk Register
 **Artifact Location**: `artifacts/risk-register/`
 **Output Location**: `docs/helix/01-frame/risk-register.md`
 
@@ -128,7 +137,7 @@ Systematic risk identification and management:
 - Monitoring schedule and triggers
 - Risk budget and reserve tracking
 
-#### 8. Validation Checklist
+#### 9. Validation Checklist
 **Artifact Location**: `artifacts/validation-checklist/`
 **Output Location**: `docs/helix/01-frame/validation-checklist.md`
 

@@ -56,6 +56,8 @@ dun:
 - [Out of scope item 1]
 - [Out of scope item 2]
 
+Deferred and future items are tracked in `docs/helix/parking-lot.md`.
+
 ## Users and Personas
 
 ### Primary Persona: [Name]
