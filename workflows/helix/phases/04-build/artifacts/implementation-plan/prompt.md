@@ -1,6 +1,6 @@
 # Build Plan Generation Prompt
 
-Create a comprehensive build plan that defines how to systematically implement code to make failing tests pass. This plan takes the failing test suite from the Test phase and creates a roadmap for implementation using Test-Driven Development principles.
+Create the canonical project-level build plan for the Build phase.
 
 ## Storage Location
 
@@ -8,318 +8,70 @@ Store the build plan at: `docs/helix/04-build/implementation-plan.md`
 
 ## Purpose
 
-The build plan is an implementation roadmap that:
-- Prioritizes which tests to make pass first
-- Defines the component build sequence
-- Plans refactoring milestones
-- Establishes code organization patterns
-- Creates checkpoints for progress tracking
+The build plan is the authoritative execution strategy for the Build phase. It
+does not replace story-level task tracking. Instead, it defines:
 
-## Key Principles
+- the build order across stories or functional areas
+- shared constraints and standards
+- integration checkpoints
+- the rules for decomposing work into build beads
 
-### 1. Test-Driven Implementation
-No code without a failing test - every line of production code must be written to make a specific test pass.
+Story-level implementation work belongs in upstream Beads (`bd`), not in custom
+HELIX bead files or markdown story implementation plans.
 
-### 2. Incremental Development
-Build the system incrementally, making one test pass at a time, maintaining a working system throughout.
+## Required Inputs
 
-### 3. Red-Green-Refactor Cycle
-Follow the TDD cycle religiously:
-- Red: Start with a failing test
-- Green: Write minimal code to pass
-- Refactor: Improve code while keeping tests green
+- `docs/helix/03-test/test-plan.md`
+- `docs/helix/03-test/test-plans/TP-*.md`
+- `docs/helix/02-design/technical-designs/TD-*.md`
+- project-level design artifacts that constrain implementation
 
-### 4. Continuous Integration
-Every test that passes should be committed, ensuring the build is always in a deployable state.
+## Output Requirements
 
-## Plan Components
+The build plan must include:
 
-### Implementation Strategy
+1. **Scope and authority**
+   - Governing artifacts
+   - Assumptions and constraints
+   - What the plan does and does not control
 
-#### Build Order Priority
-Define which tests to tackle first based on:
-- **Dependencies**: Tests that unblock others
-- **Risk**: High-risk areas first
-- **Value**: Business-critical features
-- **Complexity**: Balance easy wins with hard problems
-- **Learning**: Areas that inform architecture
+2. **Build sequencing**
+   - Story or functional area ordering
+   - Shared dependencies
+   - Critical integration points
 
-#### Component Sequence
-Plan the order of component development:
-1. Core data models
-2. Business logic layer
-3. Service interfaces
-4. API endpoints
-5. UI components
-6. Integration points
+3. **Bead decomposition strategy**
+   - Which stories or areas become build beads
+   - Recommended bead boundaries
+   - Required `bd` labels, parents, and dependency rules
 
-#### Architecture Decisions
-Document key implementation choices:
-- Design patterns to use
-- Code organization structure
-- Dependency management
-- Error handling approach
-- Performance considerations
+4. **Quality and verification rules**
+   - Required tests
+   - Build review checkpoints
+   - Conditions for closing build beads
 
-### Test-to-Code Mapping
+5. **Risks and blockers**
+   - Known implementation risks
+   - Escalation triggers
+   - When to refine upstream artifacts instead of continuing implementation
 
-#### Test Analysis
-For each failing test, identify:
-- What functionality it requires
-- Which components need implementation
-- Dependencies on other tests
-- Estimated implementation effort
+## Bead Rules
 
-#### Implementation Tasks
-Break down each test into tasks:
-- Minimal code to make test pass
-- Refactoring opportunities
-- Documentation needs
-- Performance optimization points
+- Do not embed a long-lived task log in the canonical build plan.
+- Use the build plan to drive creation of upstream `bd` issues.
+- Each build bead must cite the test plan, technical design, and this build plan.
+- If a story needs multiple independent implementation slices, create multiple beads.
 
-#### Progress Tracking
-Define how to measure progress:
-- Tests passing per day
-- Coverage increasing
-- Code quality metrics
-- Technical debt tracking
+## Template
 
-### Development Workflow
+Use the template at
+`workflows/helix/phases/04-build/artifacts/implementation-plan/template.md`.
+Use HELIX bead guidance at `workflows/helix/BEADS.md`.
 
-#### Daily Cycle
-Structure the daily development flow:
-1. Review failing tests
-2. Select next test to tackle
-3. Implement minimal solution
-4. Verify test passes
-5. Refactor if needed
-6. Commit and push
-7. Update progress tracking
+## Completion Criteria
 
-#### Code Review Points
-Define when to pause for review:
-- After each component completion
-- Before major refactoring
-- At integration boundaries
-- When patterns emerge
-
-#### Integration Checkpoints
-Plan integration milestones:
-- Component integration tests passing
-- API contract tests passing
-- End-to-end tests passing
-- Performance benchmarks met
-
-### Refactoring Strategy
-
-#### Refactoring Triggers
-When to refactor:
-- Three strikes rule (duplication)
-- Performance bottlenecks
-- Complexity thresholds
-- Test feedback
-- Code review feedback
-
-#### Refactoring Patterns
-Common refactoring to apply:
-- Extract method/class
-- Introduce design patterns
-- Simplify conditionals
-- Remove duplication
-- Improve naming
-
-#### Safety Checks
-Ensure refactoring safety:
-- All tests remain green
-- No functionality change
-- Performance not degraded
-- Code coverage maintained
-
-### Code Organization
-
-#### Project Structure
-Define the codebase organization:
-- Layer separation (MVC, Clean Architecture, etc.)
-- Module boundaries
-- Shared code location
-- Configuration management
-- Documentation placement
-
-#### Coding Standards
-Establish consistency rules:
-- Naming conventions
-- File organization
-- Comment standards
-- Error handling patterns
-- Logging approach
-
-#### Documentation Requirements
-Plan documentation creation:
-- API documentation
-- Code comments
-- README files
-- Architecture diagrams
-- Developer guides
-
-### Quality Assurance
-
-#### Definition of Done
-When is a test truly "passing":
-- Test passes consistently
-- Code is clean and readable
-- Documentation is updated
-- Code review completed
-- Performance acceptable
-
-#### Quality Gates
-Checkpoints before proceeding:
-- Code coverage targets met
-- No critical issues from linting
-- Security checks passed
-- Performance benchmarks met
-- Documentation complete
-
-#### Technical Debt Management
-Handle debt strategically:
-- Track debt as you create it
-- Plan refactoring sprints
-- Balance speed with quality
-- Document compromises
-- Schedule debt payment
-
-### Risk Management
-
-#### Implementation Risks
-Identify potential blockers:
-- Complex integrations
-- Performance challenges
-- Unclear requirements
-- Technical limitations
-- Resource constraints
-
-#### Mitigation Strategies
-Plan risk responses:
-- Spike solutions for unknowns
-- Prototype risky areas first
-- Have backup approaches
-- Time-box investigations
-- Escalation procedures
-
-### Resource Planning
-
-#### Team Allocation
-Plan resource distribution:
-- Feature team assignments
-- Pairing rotations
-- Knowledge sharing sessions
-- Code review assignments
-- Support responsibilities
-
-#### Timeline Estimation
-Realistic time planning:
-- Tests per day velocity
-- Component completion dates
-- Integration milestones
-- Buffer for unknowns
-- Refactoring time
-
-#### Tool Requirements
-Development environment needs:
-- IDE setup and plugins
-- Debugging tools
-- Performance profilers
-- Database tools
-- API testing tools
-
-## Integration with Test Plan
-
-### Using the Test Plan
-Reference the test plan for:
-- Understanding test structure
-- Test priority order
-- Coverage requirements
-- Test infrastructure
-- Success metrics
-
-### Test Plan Alignment
-Ensure alignment on:
-- Test organization mirrors code organization
-- Priority order matches business value
-- Coverage targets drive implementation
-- Infrastructure supports development
-
-### Feedback Loop
-Provide feedback to test plan:
-- Tests that need clarification
-- Missing test scenarios discovered
-- Test infrastructure improvements
-- Test organization refinements
-
-## Success Metrics
-
-### Velocity Metrics
-Track development speed:
-- Tests passing per day
-- Story points completed
-- Features delivered
-- Bugs discovered vs fixed
-
-### Quality Metrics
-Monitor code quality:
-- Code coverage percentage
-- Cyclomatic complexity
-- Technical debt ratio
-- Code review findings
-- Performance metrics
-
-### Progress Indicators
-Measure overall progress:
-- Percentage of tests passing
-- Features complete
-- Integration points working
-- Documentation coverage
-
-## Quality Checklist
-
-Before starting implementation:
-- [ ] All failing tests are understood
-- [ ] Implementation priority is clear
-- [ ] Architecture decisions are documented
-- [ ] Team responsibilities are assigned
-- [ ] Development environment is ready
-- [ ] CI/CD pipeline is configured
-- [ ] Code standards are defined
-- [ ] Review process is established
-
-## Common Pitfalls to Avoid
-
-### ❌ Implementing Without Tests
-- Bad: Writing code not demanded by tests
-- Good: Only code that makes tests pass
-
-### ❌ Over-Engineering
-- Bad: Building for future requirements
-- Good: Minimal code to pass current tests
-
-### ❌ Skipping Refactoring
-- Bad: Accumulating technical debt
-- Good: Regular refactoring when tests are green
-
-### ❌ Ignoring Test Feedback
-- Bad: Fighting against test design
-- Good: Let tests guide architecture
-
-### ❌ Big Bang Integration
-- Bad: Integrate everything at once
-- Good: Continuous integration throughout
-
-## Next Phase: Deploy
-
-The build plan enables deployment by ensuring:
-1. All tests are passing
-2. Code quality standards are met
-3. Documentation is complete
-4. Performance targets achieved
-5. System is production-ready
-
-Remember: The build phase is about making tests pass systematically, not about writing tests (they already exist and are failing).
+- [ ] Build sequencing is explicit
+- [ ] Shared dependencies are identified
+- [ ] Build bead decomposition is defined
+- [ ] Quality gates and verification are clear
+- [ ] No `[NEEDS CLARIFICATION]` markers remain

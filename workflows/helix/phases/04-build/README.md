@@ -36,6 +36,44 @@ Technical execution strategy:
 - **Coding Standards**: Conventions and patterns
 - **Integration Points**: How components connect
 - **Resource Planning**: Team assignments and timeline
+- **Build Bead Strategy**: How story-level execution is decomposed into upstream `bd` issues
+
+### Story Build Beads
+**Output Location**: upstream Beads workspace in `.beads/` queried through `bd`
+
+Story-level implementation work is tracked as build beads rather than
+per-story markdown plans. Build beads:
+- reference the user story, technical design, test plan, and build plan
+- use native `bd` issue IDs, dependencies, labels, and ready queues
+- define deterministic implementation steps
+- close independently once verification criteria are met
+
+The canonical execution entry point for ready work is:
+
+```bash
+ddx workflow helix execute implementation
+ddx workflow helix execute implementation bd-abc123
+ddx workflow helix execute implementation US-042
+```
+
+This action handles one bead per run: it selects or loads a ready execution
+bead, claims it, validates governing artifacts, performs the scoped work, runs
+required verification, creates follow-on beads when needed, commits with bead
+traceability, closes the bead, and exits.
+
+Use this action as the canonical ready-queue entry point. Use story- or
+feature-specific Build actions only when the work is already explicitly scoped
+to that story or feature.
+
+When the ready queue drains, do not switch to an unconditional loop. Run the
+cross-phase queue-health action instead:
+
+```bash
+ddx workflow helix execute check
+```
+
+That action determines whether the next step is more implementation,
+alignment, backfill, waiting on blockers, user guidance, or stopping.
 
 ### 2. Build Procedures
 **Location**: `artifacts/build-procedures/`

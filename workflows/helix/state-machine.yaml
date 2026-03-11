@@ -132,7 +132,7 @@ phases:
     artifacts:
       ordered:
         - implementation-plan    # Plan the build
-        - story-implementation-plan  # Per-story plans
+        - story-implementation-plan  # Emits per-story build beads
       parallel:
         - build-procedures       # Build documentation
         - secure-coding          # Security guidelines
@@ -206,8 +206,8 @@ story_flow:
     user_story: US
     technical_design: TD
     test_plan: TP
-    implementation_plan: IP
-    deployment_plan: DP
+    implementation_bead: "bd issue labeled phase:build"
+    deployment_bead: "bd issue labeled phase:deploy"
     iteration_report: IR
 
   transitions:
@@ -218,12 +218,12 @@ story_flow:
       to: TP-{id}
       phase_change: design -> test
     - from: TP-{id}
-      to: IP-{id}
+      to: "bd issue(s) labeled helix, phase:build, story:US-{id}"
       phase_change: test -> build
-    - from: IP-{id}
-      to: DP-{id}
+    - from: "bd issue(s) labeled helix, phase:build, story:US-{id}"
+      to: "bd issue(s) labeled helix, phase:deploy, story:US-{id}"
       phase_change: build -> deploy
-    - from: DP-{id}
+    - from: "bd issue(s) labeled helix, phase:deploy, story:US-{id}"
       to: IR-{id}
       phase_change: deploy -> iterate
 
@@ -233,8 +233,8 @@ story_flow:
       If exists US-036: Story is in FRAME
       If exists TD-036: Story is in DESIGN
       If exists TP-036: Story is in TEST
-      If exists IP-036: Story is in BUILD
-      If exists DP-036: Story is in DEPLOY
+      If `bd list --label helix --label phase:build --label story:US-036` returns open work: Story is in BUILD
+      If `bd list --label helix --label phase:deploy --label story:US-036` returns open work: Story is in DEPLOY
       If exists IR-036: Story is in ITERATE
 
 # Parallelization rules

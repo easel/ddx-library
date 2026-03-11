@@ -39,6 +39,10 @@ exit_requirements:
       description: "Improvement backlog must exist"
 
     - check: file_exists
+      path: .beads
+      description: "Upstream Beads workspace must be initialized for actionable items"
+
+    - check: file_exists
       path: docs/helix/06-iterate/retrospective.md
       description: "Team retrospective must exist"
 
@@ -55,7 +59,7 @@ exit_requirements:
     - check: grep_present
       pattern: "(action item|next step|improvement|TODO)"
       path: docs/helix/06-iterate/retrospective.md
-      description: "Retrospective contains action items"
+      description: "Retrospective contains follow-up work to convert into beads"
 
     # Backlog has prioritized items
     - check: grep_present
@@ -70,6 +74,9 @@ exit_requirements:
       description: "Next iteration has defined goals"
 
   manual:
+    - "Backlog beads created in upstream Beads (`bd`)"
+    - "Improvement backlog references bead IDs or `bd` queries"
+    - "Next iteration plan references selected bead IDs"
     - "Team retrospective completed with all members"
     - "Improvement priorities agreed by stakeholders"
     - "Decision made: continue to next iteration or project complete"

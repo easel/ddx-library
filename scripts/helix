@@ -1,0 +1,332 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+resolve_script_dir() {
+  local source="${BASH_SOURCE[0]}"
+  while [[ -L "$source" ]]; do
+    local dir
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    source="$(readlink "$source")"
+    [[ "$source" != /* ]] && source="$dir/$source"
+  done
+  cd -P "$(dirname "$source")" && pwd
+}
+
+script_dir="$(resolve_script_dir)"
+library_root="$(cd "$script_dir/.." && pwd)"
+helix_docs_root="${HELIX_LIBRARY_ROOT:-$library_root/workflows/helix}"
+target_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+
+agent="${HELIX_AGENT:-codex}"
+review_every=0
+max_cycles=0
+auto_align=1
+dry_run=0
+
+usage() {
+  cat <<EOF
+Usage:
+  helix run [--agent codex|claude] [--review-every N] [--max-cycles N] [--no-auto-align] [--dry-run]
+  helix implement [--agent codex|claude] [selector]
+  helix check [--agent codex|claude] [scope]
+  helix align [--agent codex|claude] [scope]
+  helix backfill [--agent codex|claude] [scope]
+  helix help
+
+Commands:
+  run         Loop over ready HELIX work, then check whether to continue
+  implement   Run one bounded implementation pass
+  check       Run the bounded HELIX queue-health check
+  align       Run reconcile-alignment for a scope (default: repo)
+  backfill    Run documentation backfill for a scope (default: repo)
+
+Options:
+  --agent           Agent to use: codex or claude (default: ${agent})
+  --review-every    Run alignment every N completed implementation cycles
+  --max-cycles      Stop after N completed implementation cycles
+  --no-auto-align   Do not auto-run alignment when check returns ALIGN
+  --dry-run         Print the agent command instead of executing it
+
+Environment:
+  HELIX_AGENT         Default agent (codex or claude)
+  HELIX_LIBRARY_ROOT  Override the library root that contains workflows/helix/
+EOF
+}
+
+need_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "missing required command: $1" >&2
+    exit 1
+  fi
+}
+
+ensure_beads_initialized() {
+  need_cmd bd
+  if [[ ! -d "$target_root/.beads" ]]; then
+    printf 'helix: initializing Beads in %s\n' "$target_root" >&2
+    (cd "$target_root" && bd init >/dev/null)
+  fi
+}
+
+run_agent_prompt() {
+  local prompt="$1"
+
+  case "$agent" in
+    codex)
+      need_cmd codex
+      if (( dry_run )); then
+        printf 'codex -a never -s danger-full-access exec -C %q --ephemeral %q\n' "$target_root" "$prompt"
+      else
+        codex -a never -s danger-full-access exec -C "$target_root" --ephemeral "$prompt"
+      fi
+      ;;
+    claude)
+      need_cmd claude
+      if (( dry_run )); then
+        printf 'claude -p --permission-mode bypassPermissions --dangerously-skip-permissions --no-session-persistence %q\n' "$prompt"
+      else
+        claude -p \
+          --permission-mode bypassPermissions \
+          --dangerously-skip-permissions \
+          --no-session-persistence \
+          "$prompt"
+      fi
+      ;;
+    *)
+      echo "unsupported agent: $agent" >&2
+      exit 1
+      ;;
+  esac
+}
+
+implementation_prompt() {
+  local selector="${1:-}"
+  cat <<EOF
+Use the HELIX implementation action at ${helix_docs_root}/actions/implementation.md.
+Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/phases/04-build/enforcer.md as needed.
+Execute in the current repository rooted at ${target_root}.
+${selector:+Implementation target: ${selector}.}
+Follow the action exactly.
+EOF
+}
+
+check_prompt() {
+  local scope="${1:-repo}"
+  cat <<EOF
+Use the HELIX check action at ${helix_docs_root}/actions/check.md.
+Use supporting references at ${helix_docs_root}/BEADS.md and ${helix_docs_root}/README.md as needed.
+Execute in the current repository rooted at ${target_root}.
+Review scope: ${scope}.
+Return the required NEXT_ACTION line and the exact next command.
+Follow the action exactly.
+EOF
+}
+
+alignment_prompt() {
+  local scope="${1:-repo}"
+  cat <<EOF
+Use the HELIX alignment action at ${helix_docs_root}/actions/reconcile-alignment.md.
+Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/templates/alignment-review.md as needed.
+Execute in the current repository rooted at ${target_root}.
+Review scope: ${scope}.
+Follow the action exactly.
+EOF
+}
+
+backfill_prompt() {
+  local scope="${1:-repo}"
+  cat <<EOF
+Use the HELIX backfill action at ${helix_docs_root}/actions/backfill-helix-docs.md.
+Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/templates/backfill-report.md as needed.
+Execute in the current repository rooted at ${target_root}.
+Backfill scope: ${scope}.
+Follow the action exactly.
+EOF
+}
+
+helix_ready_count() {
+  need_cmd jq
+  ensure_beads_initialized
+
+  bd ready \
+    --label helix \
+    --label-any phase:build \
+    --label-any phase:deploy \
+    --label-any phase:iterate \
+    --json | jq 'length'
+}
+
+extract_next_action() {
+  printf '%s\n' "$1" | grep -E '^NEXT_ACTION: ' | head -n1 | sed 's/^NEXT_ACTION: //'
+}
+
+parse_common_flags() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --agent)
+        agent="$2"
+        shift 2
+        ;;
+      --dry-run)
+        dry_run=1
+        shift
+        ;;
+      --help|-h)
+        usage
+        exit 0
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  REMAINING_ARGS=("$@")
+}
+
+run_implementation() {
+  local selector="${1:-}"
+  run_agent_prompt "$(implementation_prompt "$selector")"
+}
+
+run_check() {
+  local scope="${1:-repo}"
+  run_agent_prompt "$(check_prompt "$scope")"
+}
+
+run_alignment() {
+  local scope="${1:-repo}"
+  run_agent_prompt "$(alignment_prompt "$scope")"
+}
+
+run_backfill() {
+  local scope="${1:-repo}"
+  run_agent_prompt "$(backfill_prompt "$scope")"
+}
+
+run_loop() {
+  local cycles=0
+  local post_drain_alignment_ran=0
+
+  need_cmd bd
+  need_cmd jq
+  ensure_beads_initialized
+
+  while true; do
+    local ready_count
+    ready_count="$(helix_ready_count)"
+
+    if (( ready_count > 0 )); then
+      printf 'helix: ready=%s, cycle=%s\n' "$ready_count" "$((cycles + 1))" >&2
+      run_implementation
+      cycles=$((cycles + 1))
+      post_drain_alignment_ran=0
+
+      if (( review_every > 0 )) && (( cycles % review_every == 0 )); then
+        printf 'helix: periodic alignment after %s cycles\n' "$cycles" >&2
+        run_alignment repo
+      fi
+
+      if (( max_cycles > 0 )) && (( cycles >= max_cycles )); then
+        printf 'helix: reached max cycles (%s)\n' "$max_cycles" >&2
+        return 0
+      fi
+
+      continue
+    fi
+
+    local check_output
+    check_output="$(run_check repo)"
+    printf '%s\n' "$check_output"
+
+    local next_action
+    next_action="$(extract_next_action "$check_output" || true)"
+
+    case "$next_action" in
+      IMPLEMENT)
+        continue
+        ;;
+      ALIGN)
+        if (( auto_align )) && (( post_drain_alignment_ran == 0 )); then
+          printf 'helix: queue drained, running alignment\n' >&2
+          run_alignment repo
+          post_drain_alignment_ran=1
+          continue
+        fi
+        return 0
+        ;;
+      BACKFILL|WAIT|GUIDANCE|STOP)
+        return 0
+        ;;
+      *)
+        echo "helix: unable to determine NEXT_ACTION from check output" >&2
+        return 1
+        ;;
+    esac
+  done
+}
+
+main() {
+  local command="${1:-help}"
+  shift || true
+
+  case "$command" in
+    help|-h|--help)
+      usage
+      ;;
+    run)
+      parse_common_flags "$@"
+      set -- "${REMAINING_ARGS[@]}"
+
+      while [[ $# -gt 0 ]]; do
+        case "$1" in
+          --review-every)
+            review_every="$2"
+            shift 2
+            ;;
+          --max-cycles)
+            max_cycles="$2"
+            shift 2
+            ;;
+          --no-auto-align)
+            auto_align=0
+            shift
+            ;;
+          *)
+            echo "unknown option for run: $1" >&2
+            exit 1
+            ;;
+        esac
+      done
+
+      run_loop
+      ;;
+    implement)
+      parse_common_flags "$@"
+      set -- "${REMAINING_ARGS[@]}"
+      run_implementation "${1:-}"
+      ;;
+    check)
+      parse_common_flags "$@"
+      set -- "${REMAINING_ARGS[@]}"
+      run_check "${1:-repo}"
+      ;;
+    align)
+      parse_common_flags "$@"
+      set -- "${REMAINING_ARGS[@]}"
+      run_alignment "${1:-repo}"
+      ;;
+    backfill)
+      parse_common_flags "$@"
+      set -- "${REMAINING_ARGS[@]}"
+      run_backfill "${1:-repo}"
+      ;;
+    *)
+      echo "unknown command: $command" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

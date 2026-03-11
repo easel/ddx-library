@@ -5,7 +5,7 @@
 - `docs/helix/02-design/technical-designs/TD-{XXX}-*.md` - Technical design for story
 
 ## Produced Output
-- `docs/helix/03-test/story-test-plans/TP-{XXX}-*.md` - Test plan for specific story
+- `docs/helix/03-test/test-plans/TP-{XXX}-*.md` - Test plan for specific story
 
 ## Prompt
 

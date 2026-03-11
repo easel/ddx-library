@@ -41,9 +41,9 @@ dependencies:
       pattern: "TP-XXX-*.md"
       phase: test
 
-    - output: Implementation Plan
-      type: artifact
-      pattern: "IP-XXX-*.md"
+    - output: Story Build Bead
+      type: bead
+      pattern: "bd issue labeled helix,phase:build,story:US-XXX"
       phase: build
 
 output:
@@ -159,7 +159,7 @@ relationships:
 
   informs:
     - story-test-plan
-    - implementation-plan
+    - story-build-bead
 
   references:
     - contracts

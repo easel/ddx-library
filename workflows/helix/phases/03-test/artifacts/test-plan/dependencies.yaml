@@ -23,11 +23,9 @@ outputs:
   produces:
     - artifact: test-suite
       relationship: "actual test implementation"
-    - artifact: implementation-plan
+    - artifact: build-bead
       phase: "04-build"
-      prefix: IP
-      same_number: true
-      relationship: "implementation makes tests pass"
+      relationship: "build beads tracked in upstream bd make the tests pass"
 
 completion:
   automated_checks:

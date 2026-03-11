@@ -122,6 +122,14 @@ Operational procedures:
 - Emergency contacts
 - Disaster recovery
 
+### Story Deploy Beads
+**Output Location**: upstream Beads workspace in `.beads/` queried through `bd`
+
+Story-level rollout work is tracked as deploy beads rather than per-story
+deployment markdown plans. Deploy beads reference the project deployment
+artifacts and the build beads they are rolling out using native `bd` issue IDs,
+dependencies, and labels.
+
 ## Artifact Metadata
 
 Each artifact can include a `meta.yml` file that defines:

@@ -574,20 +574,21 @@ fi
 
 ## Beads Integration
 
-**New Bead Fields**:
-```yaml
-# .beads/BEAD-001.yaml
-id: BEAD-001
-title: "Implement auth handler"
-spec: "docs/FEAT-001.md"           # Governing specification
-contracts:                          # Required interfaces
-  provides:
-    - AuthProvider
-  consumes:
-    - UserRepository
-integration_tests:                  # Must pass before complete
-  - "tests/integration/auth_test.go"
+**Upstream Beads Mapping**:
+```bash
+bd create "Implement auth handler" \
+  --type task \
+  --spec-id docs/FEAT-001.md \
+  --labels helix,phase:build,kind:build,area:auth \
+  --description "Governing specification: docs/FEAT-001.md" \
+  --design "Provides: AuthProvider. Consumes: UserRepository." \
+  --acceptance "tests/integration/auth_test.go passes before close."
 ```
+
+- governing specification: native `spec-id`
+- contracts: `design` or structured metadata
+- integration tests: `acceptance`
+- blockers: native dependency graph via `bd dep add`
 
 **Beads Plugin Checks**:
 ```yaml
@@ -595,19 +596,19 @@ integration_tests:                  # Must pass before complete
 checks:
   - id: bead-spec-binding
     type: spec-binding
-    description: "Verify bead has governing spec"
+    description: "Verify bead has governing spec_id"
     rules:
       - type: field-required
-        field: spec
+        field: spec_id
       - type: file-exists
-        field: spec
+        field: spec_id
 
   - id: bead-contracts
     type: integration-contract
     description: "Verify bead contracts are satisfied"
     rules:
-      - type: contracts-defined
-      - type: integration-tests-exist
+      - type: design-contracts-defined
+      - type: acceptance-tests-exist
 ```
 ```
 

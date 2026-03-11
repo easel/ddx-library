@@ -18,6 +18,7 @@ Projects using HELIX should organize their documentation using the `docs/helix/`
 
 ```
 project-root/
+├── .beads/                  # Upstream bd workspace for execution tracking
 ├── docs/
 │   ├── helix/                  # HELIX phase artifacts
 │   │   ├── parking-lot.md       # Deferred and future work registry
@@ -36,8 +37,9 @@ project-root/
 
 1. **Clear Separation**: Phase artifacts are distinct from operational/reference docs
 2. **Workflow Alignment**: Numbered directories match HELIX phase order
-3. **Tool Support**: Consistent structure enables validation and automation
-4. **Flexibility**: Non-phase documentation has dedicated locations
+3. **Execution Separation**: Ephemeral task execution lives in upstream Beads under `.beads/`, not in canonical planning docs
+4. **Tool Support**: Consistent structure enables validation and automation
+5. **Flexibility**: Non-phase documentation has dedicated locations
 
 ### Phase Directory Contents
 
@@ -86,6 +88,8 @@ Each phase directory contains artifacts directly (no `artifacts/` subdirectory):
 ├── metrics-dashboard/         # Performance metrics
 ├── feedback-analysis/        # User feedback
 ├── lessons-learned/          # Retrospectives
+├── alignment-reviews/        # Cross-phase reconciliation reports
+├── backfill-reports/         # Research-first documentation backfill reports
 ├── improvement-backlog/      # Enhancement ideas
 └── refinements/              # Story refinement logs and tracking
 ```
@@ -97,6 +101,58 @@ The parking lot is a project-level registry for deferred and future work:
 - **Purpose**: Capture deferred work without adding inline sections to core artifacts
 - **Eligibility**: Any HELIX artifact may be parked
 - **Tooling**: Mark parked artifacts with `dun.parking_lot: true` to exclude them from dependency graphs
+
+## Beads Conventions
+
+Beads capture scoped work that can be opened, updated, split, blocked, and
+closed without changing the canonical authority stack.
+
+HELIX uses upstream Beads (`bd`) rather than a HELIX-specific bead schema. See
+[BEADS.md](BEADS.md), <https://github.com/steveyegge/beads>, and
+<https://steveyegge.github.io/beads/>.
+
+### When to Use Beads
+
+Use beads for:
+- Story-level implementation work
+- Story-level deployment work
+- Prioritized backlog items
+- Review and reconciliation tasks
+- Follow-up actions derived from reports or retrospectives
+
+Do not use beads as the source of truth for:
+- Vision
+- Requirements
+- Architecture or ADRs
+- Solution or technical designs
+- Test plans or executable tests
+- Project-level implementation strategy
+
+### Required Properties
+
+Every bead should:
+1. Use native upstream `bd` issue types, parents, dependencies, and statuses
+2. Reference governing canonical artifacts in `spec-id` and/or the issue description
+3. Define a single coherent goal
+4. Specify deterministic completion criteria
+5. Include verification steps
+6. Remain small enough to close independently
+
+### Label Conventions
+
+- Always add `helix`
+- Add exactly one phase label: `phase:build`, `phase:deploy`, `phase:iterate`, or `phase:review`
+- Add `kind:build`, `kind:deploy`, `kind:backlog`, or `kind:review` when helpful
+- Add traceability labels such as `story:US-XXX`, `feature:FEAT-XXX`, `source:metrics`, or `area:auth`
+- Use `bd ready`, `bd blocked`, and `bd dep tree` instead of relying on custom HELIX status fields
+
+### HELIX Integration
+
+- Project-level implementation plans decompose execution into upstream Beads issues.
+- Improvement backlog documents summarize and prioritize backlog beads stored in `bd`.
+- Iteration planning selects bead sets for the next cycle by bead ID.
+- Reports and retrospectives should emit follow-up beads instead of embedding
+  durable task lists in canonical docs.
 
 ## Naming Conventions
 

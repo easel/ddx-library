@@ -49,5 +49,5 @@ Use the template at `workflows/helix/phases/06-iterate/artifacts/lessons-learned
 ## Completion Criteria
 - [ ] Both successes and improvements documented
 - [ ] Root causes identified for issues
-- [ ] Actionable improvement items listed
+- [ ] Candidate backlog beads identified for actionable follow-up work
 - [ ] Knowledge transfer items identified

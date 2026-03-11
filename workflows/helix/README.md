@@ -6,7 +6,7 @@ dun:
 
 A test-driven development workflow with AI-assisted collaboration for building high-quality software iteratively.
 
-> **Quick Links**: [Quick Start Guide](QUICKSTART.md) | [Visual Overview](diagrams/workflow-overview.md) | [Reference Card](REFERENCE.md) | [Artifact Flow](diagrams/artifact-flow.md)
+> **Quick Links**: [Quick Start Guide](QUICKSTART.md) | [Visual Overview](diagrams/workflow-overview.md) | [Reference Card](REFERENCE.md) | [Execution Guide](EXECUTION.md) | [Artifact Flow](diagrams/artifact-flow.md) | [Beads Integration](BEADS.md)
 
 ## Overview
 
@@ -51,6 +51,67 @@ Each phase (except Frame) has input gates that validate the previous phase's out
 - **Iterate** begins once the system is deployed and operational
 
 This test-first approach ensures specifications drive implementation and quality is built in from the start.
+
+## Authority Order
+
+When HELIX artifacts disagree, resolve the conflict using this authority order:
+
+1. **Product Vision** (`00-discover/product-vision.md`)
+2. **Product Requirements** (`01-frame/prd.md`)
+3. **Feature Specifications and User Stories** (`01-frame/features/`, `01-frame/user-stories/`)
+4. **Architecture and ADRs** (`02-design/architecture.md`, `02-design/adr/`)
+5. **Solution Designs and Technical Designs** (`02-design/solution-designs/`, `02-design/technical-designs/`)
+6. **Test Plans and Executable Tests** (`03-test/`, `tests/`)
+7. **Implementation Plans** (`04-build/implementation-plan.md`)
+8. **Source Code and Build Artifacts** (`src/`, generated outputs)
+
+### Conflict Resolution Rules
+
+- Higher-order artifacts govern lower-order artifacts.
+- Tests are executable specifications for the Build phase: code must satisfy tests, not the other way around.
+- Tests do not override upstream requirements or design. If tests conflict with higher-order artifacts, return to the earlier phase and fix the inconsistency there.
+- Source code is evidence of implementation, not the source of truth for requirements, design, or behavior.
+
+## Beads
+
+Beads are HELIX's execution layer. HELIX uses upstream Beads (`bd`) by Steve
+Yegge instead of a HELIX-specific bead file format.
+
+- HELIX bead guide: [BEADS.md](BEADS.md)
+- Upstream repo (`@steveyegge/beads` / `steveyegge/beads`): <https://github.com/steveyegge/beads>
+- Upstream docs: <https://steveyegge.github.io/beads/>
+- Local usage help: `bd quickstart`, `bd human`, `bd --help`
+
+- Beads are governed by the HELIX authority stack.
+- Beads must cite the canonical artifacts that authorize the work.
+- Closing a bead records completion of a task; it does not redefine
+  requirements, design, or tests.
+- If bead execution changes behavior or scope, the governing canonical artifacts
+  must be updated explicitly.
+
+HELIX execution categories are expressed through native `bd` issue types,
+parents, dependencies, `spec-id`, and labels rather than custom files:
+
+- `phase:build` for story-level implementation work
+- `phase:deploy` for story-level rollout work
+- `phase:iterate` and `kind:backlog` for prioritized follow-up work
+- `phase:review` and `kind:review` for reconciliation or audit work
+
+## Execution
+
+HELIX execution is intentionally bounded and uses a small set of top-level
+actions:
+
+- `implementation`: execute one ready execution bead and exit
+- `check`: determine whether the next step is implementation, alignment,
+  backfill, waiting, guidance, or stopping
+- `reconcile-alignment`: run a top-down audit when the plan exists but the next
+  execution set is unclear
+- `backfill-helix-docs`: reconstruct missing HELIX docs conservatively from
+  current evidence
+
+For operator flow, queue control, and autonomous Codex or Claude loop recipes,
+see [EXECUTION.md](EXECUTION.md).
 
 ## Human-AI Collaboration
 

@@ -7,368 +7,96 @@ dun:
 # Build Plan
 
 **Project**: [Project Name]
-**Version**: 1.0.0
 **Date**: [Date]
-**Status**: Draft
-**Author**: [Author Name]
+**Status**: Draft | Approved
 
-## Executive Summary
+## Scope and Authority
 
-[Brief overview of the implementation approach, key architectural decisions, and expected delivery timeline based on the failing test suite from the Test phase]
+**Purpose**: Define the canonical build strategy for the current implementation cycle.
 
-## Current State
+**Governing Artifacts**:
+- [docs/helix/01-frame/...]
+- [docs/helix/02-design/...]
+- [docs/helix/03-test/...]
 
-### Test Suite Status
+**Out of Scope**:
+- Story-level task tracking
+- Deployment execution details
+- Backlog prioritization for future iterations
 
-| Test Category | Total Tests | Currently Failing | Priority |
-|---------------|-------------|-------------------|----------|
-| Contract Tests | [Number] | [Number] | P0 |
-| Integration Tests | [Number] | [Number] | P0 |
-| Unit Tests | [Number] | [Number] | P1 |
-| E2E Tests | [Number] | [Number] | P1 |
+## Build Objectives
 
-**Total Tests to Pass**: [Number]
-**Current Coverage**: 0%
-**Target Coverage**: [Percentage]%
+- [Objective 1]
+- [Objective 2]
+- [Objective 3]
 
-### Test Plan Reference
+## Shared Constraints
 
-Using test plan from: `docs/test/test-plan.md`
-- Test organization structure defined
-- Coverage targets established
-- Priority order determined
-- Infrastructure ready
+- [Constraint from requirements or design]
+- [Constraint from architecture or tests]
+- [Operational or security constraint]
 
-## Implementation Strategy
+## Build Sequencing
 
-### Build Priority Order
+| Order | Story / Area | Governing Artifacts | Depends On | Notes |
+|------|---------------|---------------------|------------|-------|
+| 1 | [US-XXX or area] | [TP/TD refs] | None | [Why first] |
+| 2 | [US-XXX or area] | [TP/TD refs] | [Dependency] | [Why next] |
 
-#### Phase 1: Foundation (Tests 1-X)
-**Goal**: Establish core data models and basic operations
+## Build Bead Strategy
 
-| Test File | Component to Build | Estimated Time | Dependencies |
-|-----------|-------------------|----------------|--------------|
-| [test-file-1] | [Component] | [Time] | None |
-| [test-file-2] | [Component] | [Time] | [Dependency] |
+Story-level execution work is tracked as upstream Beads issues in `.beads/`.
 
-#### Phase 2: Business Logic (Tests X-Y)
-**Goal**: Implement core business rules and workflows
+**Beads Tool**:
+`bd`
 
-| Test File | Component to Build | Estimated Time | Dependencies |
-|-----------|-------------------|----------------|--------------|
-| [test-file] | [Component] | [Time] | Phase 1 |
+**Required Labels Per Build Bead**:
+- `helix`
+- `phase:build`
+- `kind:build`
+- `story:US-{story-id}`
 
-#### Phase 3: Integration (Tests Y-Z)
-**Goal**: Connect components and external services
+**Required References Per Build Bead**:
+- User Story
+- Technical Design
+- Story Test Plan
+- This build plan
 
-| Test File | Component to Build | Estimated Time | Dependencies |
-|-----------|-------------------|----------------|--------------|
-| [test-file] | [Component] | [Time] | Phase 2 |
-
-#### Phase 4: User Interface (Tests Z-N)
-**Goal**: Complete user-facing features
-
-| Test File | Component to Build | Estimated Time | Dependencies |
-|-----------|-------------------|----------------|--------------|
-| [test-file] | [Component] | [Time] | Phase 3 |
-
-### Architecture Decisions
-
-**Design Patterns**:
-- [Pattern 1]: [Where and why]
-- [Pattern 2]: [Where and why]
+**Required Native Fields**:
+- `type: task` unless there is a strong reason to use another native upstream type
+- `spec-id` pointing at the nearest governing artifact
+- dependency links for blockers rather than a custom blocked field
 
-**Code Organization**:
-```
-src/
-├── domain/           # Business logic
-├── application/      # Use cases
-├── infrastructure/   # External interfaces
-├── presentation/     # API/UI layer
-└── shared/          # Common utilities
-```
-
-**Technology Stack**:
-- Language: [Language and version]
-- Framework: [Framework and version]
-- Database: [Database choice]
-- Testing: [Test framework]
-
-## Test-to-Implementation Mapping
-
-### Contract Tests → API Implementation
-
-| Failing Test | Endpoint | Implementation Tasks | Effort |
-|-------------|----------|---------------------|--------|
-| POST /users test | /api/users | 1. Create controller<br>2. Add validation<br>3. Connect to service | 2h |
-| GET /users/:id test | /api/users/:id | 1. Add route<br>2. Implement handler<br>3. Error handling | 1h |
-
-### Integration Tests → Service Layer
-
-| Failing Test | Service | Implementation Tasks | Effort |
-|-------------|---------|---------------------|--------|
-| UserService.create | UserService | 1. Create service class<br>2. Add database operations<br>3. Implement business rules | 3h |
-| EmailService.send | EmailService | 1. Create email client<br>2. Add templates<br>3. Queue integration | 2h |
-
-### Unit Tests → Business Logic
-
-| Failing Test | Module | Implementation Tasks | Effort |
-|-------------|--------|---------------------|--------|
-| validateEmail | Validators | 1. Create validation function<br>2. Add regex patterns<br>3. Error messages | 30m |
-| calculateTax | Calculators | 1. Implement formula<br>2. Handle edge cases<br>3. Precision handling | 1h |
-
-## Development Workflow
-
-### Daily Development Cycle
-
-**Morning**:
-1. Review test failures from previous day
-2. Select next batch of tests (3-5 tests)
-3. Plan implementation approach
-4. Create feature branch
-
-**Development**:
-1. Run failing test to see error
-2. Write minimal code to pass
-3. Verify test passes
-4. Refactor if needed
-5. Run all related tests
-6. Commit with descriptive message
-
-**End of Day**:
-1. Push completed work
-2. Update progress tracking
-3. Note blockers or issues
-4. Plan tomorrow's tests
-
-### TDD Cycle Execution
-
-```mermaid
-graph LR
-    A[Select Failing Test] --> B[Understand Requirement]
-    B --> C[Write Minimal Code]
-    C --> D{Test Passes?}
-    D -->|No| C
-    D -->|Yes| E[Refactor]
-    E --> F[All Tests Green?]
-    F -->|No| G[Fix Regression]
-    G --> F
-    F -->|Yes| H[Commit]
-    H --> A
-```
-
-### Code Review Checkpoints
-
-**Review Triggers**:
-- [ ] Component complete (all related tests passing)
-- [ ] End of each development phase
-- [ ] Before major refactoring
-- [ ] Complex implementation complete
-
-**Review Checklist**:
-- [ ] Tests are passing
-- [ ] Code follows standards
-- [ ] No unnecessary code
-- [ ] Documentation updated
-- [ ] Performance acceptable
-
-## Refactoring Plan
-
-### Refactoring Schedule
-
-| Week | Focus Area | Refactoring Goals |
-|------|------------|-------------------|
-| Week 1 | Foundation | Extract common patterns |
-| Week 2 | Services | Reduce duplication |
-| Week 3 | API Layer | Improve error handling |
-| Week 4 | Overall | Performance optimization |
-
-### Refactoring Patterns
-
-**Code Smells to Address**:
-- [ ] Duplicated code → Extract method/class
-- [ ] Long methods → Break into smaller functions
-- [ ] Large classes → Split responsibilities
-- [ ] Complex conditionals → Simplify logic
-- [ ] Poor naming → Improve clarity
-
-**Safety Measures**:
-- Run full test suite before refactoring
-- Refactor in small steps
-- Commit after each successful refactoring
-- Performance benchmarks remain met
-
-## Progress Tracking
-
-### Velocity Metrics
-
-| Metric | Target | Week 1 | Week 2 | Week 3 | Week 4 |
-|--------|--------|--------|--------|--------|--------|
-| Tests Passing | 100% | [%] | [%] | [%] | [%] |
-| Tests/Day | 10 | [Actual] | [Actual] | [Actual] | [Actual] |
-| Coverage | 80% | [%] | [%] | [%] | [%] |
-
-### Milestone Schedule
-
-| Milestone | Target Date | Success Criteria | Status |
-|-----------|-------------|------------------|--------|
-| Foundation Complete | [Date] | All model tests passing | ⏳ Pending |
-| API Layer Complete | [Date] | All contract tests passing | ⏳ Pending |
-| Services Complete | [Date] | All integration tests passing | ⏳ Pending |
-| Business Logic Complete | [Date] | All unit tests passing | ⏳ Pending |
-| E2E Complete | [Date] | All journey tests passing | ⏳ Pending |
-
-### Daily Progress Log
-
-| Date | Tests Passed | Total Passing | Coverage | Notes |
-|------|--------------|---------------|----------|-------|
-| [Date] | [Number] | [Running Total] | [%] | [Issues/Blockers] |
-
-## Quality Assurance
-
-### Definition of Done
-
-A test is considered "done" when:
-- [ ] Test passes consistently (no flakiness)
-- [ ] Implementation is minimal but complete
-- [ ] Code is clean and readable
-- [ ] Documentation is updated
-- [ ] Code review is approved
-- [ ] Performance is acceptable
-- [ ] No regression in other tests
-
-### Quality Gates
-
-**Before Moving to Next Test**:
-- Current test passes ✓
-- Related tests still pass ✓
-- Code coverage increased ✓
-- No linting errors ✓
-- Build succeeds ✓
-
-**Before Phase Completion**:
-- All phase tests passing ✓
-- Integration tests pass ✓
-- Documentation complete ✓
-- Performance benchmarks met ✓
-- Security scan passed ✓
-
-## Risk Management
-
-### Technical Risks
-
-| Risk | Impact | Mitigation | Owner |
-|------|--------|------------|-------|
-| Complex integration failing | High | Spike solution early | [Name] |
-| Performance requirements not met | Medium | Profile and optimize continuously | [Name] |
-| Test understanding unclear | Medium | Clarify with test author | [Name] |
-| Third-party API limitations | Low | Mock initially, integrate later | [Name] |
-
-### Blockers and Dependencies
-
-**Current Blockers**:
-- [Blocker 1]: [Impact and resolution plan]
-- [Blocker 2]: [Impact and resolution plan]
-
-**External Dependencies**:
-- [Service/API]: [Status and fallback plan]
-- [Library/Framework]: [Version and compatibility]
-
-## Resource Allocation
-
-### Team Assignments
-
-| Developer | Focus Area | Tests Assigned | Target Completion |
-|-----------|------------|----------------|-------------------|
-| [Name] | API Layer | Tests 1-20 | [Date] |
-| [Name] | Services | Tests 21-40 | [Date] |
-| [Name] | Business Logic | Tests 41-60 | [Date] |
-
-### Pair Programming Schedule
-
-| Day | Pair | Focus | Goal |
-|-----|------|-------|------|
-| Monday | [Dev1 + Dev2] | Complex integration | Pass tests X-Y |
-| Tuesday | [Dev2 + Dev3] | Performance optimization | Improve test execution time |
-
-## Documentation Plan
-
-### Documentation Deliverables
-
-| Document | When Created | Owner | Status |
-|----------|--------------|-------|--------|
-| API Documentation | With each endpoint | [Name] | ⏳ In Progress |
-| Developer Guide | End of Phase 2 | [Name] | ⏳ Not Started |
-| Architecture Diagram | After Phase 1 | [Name] | ⏳ Not Started |
-| Deployment Guide | Before Deploy phase | [Name] | ⏳ Not Started |
-
-### Code Documentation Standards
-
-**Required Comments**:
-- Complex algorithms
-- Business rule implementations
-- Non-obvious design decisions
-- Performance optimizations
-- Known limitations
-
-## Handoff to Deploy Phase
-
-### Deployment Readiness Criteria
-
-- [ ] All tests passing (100%)
-- [ ] Code coverage target met (≥80%)
-- [ ] Performance benchmarks passed
-- [ ] Security scan completed
-- [ ] Documentation complete
-- [ ] Code review approved
-- [ ] No critical bugs
-- [ ] Deployment guide ready
-
-### Deliverables for Deploy Team
-
-1. **Working Application**
-   - All features implemented
-   - All tests passing
-   - Performance optimized
-
-2. **Documentation Package**
-   - API documentation
-   - Configuration guide
-   - Deployment instructions
-   - Monitoring setup
-
-3. **Quality Report**
-   - Test coverage report
-   - Performance metrics
-   - Security scan results
-   - Known issues list
-
-## Appendices
-
-### A. Test Priority Matrix
-
-| Test ID | Business Value | Technical Risk | Implementation Order |
-|---------|---------------|----------------|---------------------|
-| [ID] | High/Medium/Low | High/Medium/Low | [Order Number] |
-
-### B. Technology Decision Log
-
-| Decision | Options Considered | Choice | Rationale |
-|----------|-------------------|--------|-----------|
-| [Area] | [Option 1, 2, 3] | [Choice] | [Why] |
-
-### C. Performance Benchmarks
-
-| Operation | Target | Current | Status |
-|-----------|--------|---------|--------|
-| API Response | <200ms | [Actual] | ✓/✗ |
-| Database Query | <50ms | [Actual] | ✓/✗ |
-| Test Suite | <5min | [Actual] | ✓/✗ |
-
----
-
-**Sign-off**: This build plan has been reviewed and approved by:
-
-- Technical Lead: _________________ Date: _______
-- Team Lead: _________________ Date: _______
-- Product Owner: _________________ Date: _______
+### Planned Bead Decomposition
+
+| Story / Area | Build Bead Labels / Query | Goal | Dependencies |
+|--------------|--------------------|------|--------------|
+| [US-XXX] | `helix`, `phase:build`, `story:US-XXX` | [Outcome] | [Deps] |
+| [US-YYY] | `helix`, `phase:build`, `story:US-YYY` | [Outcome] | [Deps] |
+
+## Integration Checkpoints
+
+- [Checkpoint 1]
+- [Checkpoint 2]
+- [Checkpoint 3]
+
+## Quality Gates
+
+- [ ] Failing tests exist before implementation starts
+- [ ] Build beads cite their governing artifacts
+- [ ] All required tests pass before closing a build bead
+- [ ] Behavior changes trigger required canonical document updates
+- [ ] Code review is completed before phase exit
+
+## Risks and Escalation
+
+| Risk | Impact | Trigger | Response |
+|------|--------|---------|----------|
+| [Risk] | [High/Med/Low] | [Trigger] | [Refine / escalate / split bead] |
+
+## Exit Criteria
+
+- [ ] Build bead set is defined
+- [ ] Sequence and dependencies are approved
+- [ ] Shared constraints are documented
+- [ ] Verification expectations are explicit

@@ -151,7 +151,7 @@ Knowledge capture and pattern recognition:
 
 #### 5. Improvement Backlog
 **Artifact Location**: `artifacts/improvement-backlog/`
-**Output Location**: `docs/helix/06-iterate/improvement-backlog.md`
+**Output Location**: `docs/helix/06-iterate/improvement-backlog.md` and upstream Beads in `.beads/`
 
 Prioritized list of improvements with impact analysis:
 - Feature enhancements
@@ -167,6 +167,10 @@ Prioritized list of improvements with impact analysis:
 - Risk assessment
 - ROI prediction
 
+The backlog document is the canonical index and prioritization view. Actionable
+items themselves should be stored as upstream Beads issues labeled for HELIX
+iterate/backlog work.
+
 #### 6. Retrospective
 **Artifact Location**: `artifacts/retrospective/`
 **Output Location**: `docs/helix/06-iterate/retrospective.md`
@@ -177,7 +181,7 @@ Team reflection and process improvement:
 - Process effectiveness
 - Communication assessment
 - Tool and technology review
-- Action items for improvement
+- Candidate backlog beads for improvement
 
 **AI Capabilities**:
 - Meeting transcript analysis
@@ -208,7 +212,8 @@ Post-incident analysis and prevention:
 **Output Location**: `docs/helix/06-iterate/next-iteration.md`
 
 Strategic planning for the next cycle:
-- Priority features for next iteration
+- Selected backlog beads for the next iteration
+- Canonical artifact updates required before execution
 - Technical improvements needed
 - Process changes to implement
 - Team capacity and allocation
@@ -220,6 +225,36 @@ Strategic planning for the next cycle:
 - Risk-adjusted prioritization
 - Success probability scoring
 - Resource allocation recommendations
+
+#### Cross-Phase Action: Alignment Review
+**Action Location**: `../../actions/reconcile-alignment.md`
+**Output Location**: `docs/helix/06-iterate/alignment-reviews/AR-YYYY-MM-DD[-scope].md`
+
+Cross-phase reconciliation review:
+- creates or reconciles a review epic and review beads in upstream Beads
+- audits the canonical HELIX stack against implementation evidence
+- writes a consolidated alignment report for the review run
+- emits follow-up execution beads only where explicit gaps exist
+
+#### Cross-Phase Action: Queue Check
+**Action Location**: `../../actions/check.md`
+**Output Location**: terminal response only
+
+Bounded execution-state review:
+- inspects ready, in-progress, and blocked HELIX work
+- checks whether the current scope should implement, align, backfill, wait, ask for guidance, or stop
+- returns a deterministic `NEXT_ACTION` code and the exact next command
+- should be used when the implementation queue drains instead of looping blindly
+
+#### Cross-Phase Action: Documentation Backfill
+**Action Location**: `../../actions/backfill-helix-docs.md`
+**Output Location**: `docs/helix/06-iterate/backfill-reports/BF-YYYY-MM-DD[-scope].md`
+
+Research-first documentation reconstruction:
+- inventories existing docs, code, tests, CI, and operational evidence
+- reconstructs missing HELIX artifacts conservatively from current state
+- asks for user guidance before low-confidence canonical content is finalized
+- writes a durable backfill report with assumptions, confidence, and follow-up work
 
 #### 9. Security Metrics and Analysis
 **Artifact Location**: `artifacts/security-metrics/`
@@ -322,7 +357,7 @@ The Iterate phase is complete when:
 1. **Data Analyzed**: All metrics, logs, and feedback processed
 2. **Insights Generated**: Clear learnings extracted from data
 3. **Improvements Identified**: Prioritized backlog of enhancements
-4. **Team Aligned**: Retrospective completed with action items
+4. **Team Aligned**: Retrospective completed with follow-up beads identified
 5. **Next Cycle Planned**: Clear goals for next iteration
 6. **Knowledge Captured**: Learnings documented for future reference
 

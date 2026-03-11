@@ -6,48 +6,31 @@
 - `docs/helix/06-iterate/metrics-dashboard.md` - Production metrics
 
 ## Produced Output
-- `docs/helix/06-iterate/improvement-backlog.md` - Prioritized improvement items
+- `docs/helix/06-iterate/improvement-backlog.md` - Prioritized backlog index
+- upstream `bd` issues labeled `helix`, `phase:iterate`, `kind:backlog`
 
 ## Prompt
 
-You are creating an improvement backlog for the next iteration. Your goal is to prioritize and document all improvement opportunities.
+You are creating the improvement backlog for the next iteration. Your goal is
+to prioritize actionable follow-up work and store each actionable item as a
+backlog bead.
 
-Based on lessons learned, user feedback, and metrics, create:
+Based on lessons learned, user feedback, and metrics:
 
-1. **Improvement Categories**
-   - Feature enhancements
-   - Bug fixes
-   - Technical debt
-   - Performance improvements
-   - Security hardening
-   - Process improvements
+1. Create or update one backlog bead per actionable item
+2. Group and prioritize the beads in the backlog index document
+3. Distinguish actionable work from observations, risks, and open questions
+4. Mark items that need canonical artifact updates before execution
 
-2. **Prioritized Backlog**
-   | Priority | Type | Item | Impact | Effort | Source |
-   |----------|------|------|--------|--------|--------|
-   | P0 | [Category] | [Description] | H/M/L | H/M/L | [Feedback/Metrics/Team] |
+Use the index template at:
+`workflows/helix/phases/06-iterate/artifacts/improvement-backlog/template.md`
 
-3. **Impact Analysis**
-   For high-priority items:
-   - User impact
-   - Business value
-   - Technical dependencies
-   - Risk if not addressed
-
-4. **Effort Estimation**
-   - T-shirt sizing (S/M/L/XL)
-   - Dependencies between items
-   - Recommended groupings
-
-5. **Next Iteration Candidates**
-   - Recommended scope for next iteration
-   - Items deferred and why
-   - Items requiring more research
-
-Use the template at `workflows/helix/phases/06-iterate/artifacts/improvement-backlog/template.md`.
+Use upstream Beads guidance at:
+`workflows/helix/BEADS.md`
 
 ## Completion Criteria
 - [ ] All improvement sources reviewed
-- [ ] Items prioritized consistently
-- [ ] Next iteration scope recommended
-- [ ] Dependencies identified
+- [ ] Every actionable item has a backlog bead
+- [ ] Beads are prioritized consistently in the index
+- [ ] Dependencies are identified
+- [ ] The index references bead IDs explicitly

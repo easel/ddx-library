@@ -21,9 +21,31 @@ The workflow also supports a project-level **Parking Lot** registry at
 marked with `dun.parking_lot: true` to keep it out of dependency graphs and
 the main PRD flow while remaining in its normal directory.
 
+## Canonical Authority Order
+
+Artifact flow and artifact authority are related but not identical. When two
+HELIX artifacts disagree, this is the canonical authority order:
+
+1. **Product Vision**
+2. **PRD**
+3. **Feature Specifications and User Stories**
+4. **Architecture and ADRs**
+5. **Solution Designs and Technical Designs**
+6. **Test Plans and Executable Tests**
+7. **Implementation Plans**
+8. **Source Code and Build Artifacts**
+
+### Notes
+
+- Feature specifications and user stories refine the PRD and remain above downstream design and implementation artifacts.
+- Tests govern Build phase execution because they are executable specifications, but they are still derived from Frame and Design artifacts.
+- Source code must conform to higher-order artifacts; it does not redefine them.
+- Beads are not part of the canonical authority order. They are execution
+  records derived from authoritative artifacts.
+
 ## Artifact Types and Relationships
 
-### Three Levels of Artifacts
+### Canonical Artifacts Plus Execution Beads
 
 ```mermaid
 graph TD
@@ -31,6 +53,7 @@ graph TD
         PRD[PRD - Product Requirements]
         ARCH[Architecture]
         PRINCIPLES[Principles]
+        IMP[Implementation Plan]
     end
 
     subgraph "Feature Level (Epics)"
@@ -42,19 +65,24 @@ graph TD
         US[US-XXX - User Story]
         TD[TD-XXX - Technical Design]
         TP[TP-XXX - Test Plan]
-        IP[IP-XXX - Implementation Plan]
-        DP[DP-XXX - Deployment Plan]
         IR[IR-XXX - Iteration Report]
+    end
+
+    subgraph "Execution Layer (Non-Canonical)"
+        BB[Build Beads]
+        DB[Deploy Beads]
     end
 
     PRD --> FEAT
     FEAT --> US
     FEAT --> SD
     SD --> TD
-    US --> TD --> TP --> IP --> DP --> IR
+    US --> TD --> TP
+    IMP --> BB
+    TP --> BB --> DB --> IR
 ```
 
-## Story-Level Progression (Vertical Slices)
+## Story-Level Progression and Execution
 
 Each user story progresses through all phases independently:
 
@@ -66,8 +94,8 @@ Each user story progresses through all phases independently:
 Frame:   US-036-list-mcp-servers.md
 Design:  TD-036-list-mcp-servers.md
 Test:    TP-036-list-mcp-servers.md
-Build:   IP-036-list-mcp-servers.md
-Deploy:  DP-036-list-mcp-servers.md
+Build:   bead issue `ddx-a3f2dd` labeled `helix`, `phase:build`, `story:US-036`
+Deploy:  bead issue `ddx-b4c9e1` labeled `helix`, `phase:deploy`, `story:US-036`
 Iterate: IR-036-list-mcp-servers.md
 ```
 
@@ -78,8 +106,7 @@ Iterate: IR-036-list-mcp-servers.md
 | US | User Story | Frame | Defines WHAT needs to be built |
 | TD | Technical Design | Design | Details HOW to build it |
 | TP | Test Plan | Test | Specifies tests to verify it |
-| IP | Implementation Plan | Build | Guides TDD implementation |
-| DP | Deployment Plan | Deploy | Plans rollout strategy |
+| BEAD | Build / Deploy Bead | Build / Deploy | Tracks scoped execution work in upstream `bd` |
 | IR | Iteration Report | Iterate | Captures metrics and learnings |
 
 ## Feature-Level Progression (Epics)
@@ -122,16 +149,18 @@ docs/
     │       └── TP-XXX-*.md           # Story-level (NEW)
     ├── 04-build/
     │   ├── implementation-plan.md     # Project-level
-    │   └── implementation-plans/
-    │       └── IP-XXX-*.md           # Story-level (NEW)
     ├── 05-deploy/
     │   ├── deployment-checklist.md    # Project-level
-    │   └── deployment-plans/
-    │       └── DP-XXX-*.md           # Story-level (NEW)
     └── 06-iterate/
+        ├── alignment-reviews/
+        │   └── AR-YYYY-MM-DD-*.md    # Cross-phase reconciliation reports
+        ├── backfill-reports/
+        │   └── BF-YYYY-MM-DD-*.md    # Research-first backfill reports
         ├── metrics-dashboard.md       # Project-level
         └── iteration-reports/
             └── IR-XXX-*.md           # Story-level (NEW)
+
+.beads/                               # Upstream bd workspace (Dolt-backed)
 ```
 
 ## Cross-References
@@ -148,11 +177,11 @@ Each artifact references its dependencies:
 
 ### Traceability Chain
 ```
-FEAT-001 → US-036 → TD-036 → TP-036 → IP-036 → DP-036 → IR-036
+FEAT-001 → US-036 → TD-036 → TP-036 → build bead(s) → deploy bead(s) → IR-036
          ↓
-         US-037 → TD-037 → TP-037 → IP-037 → DP-037 → IR-037
+         US-037 → TD-037 → TP-037 → build bead(s) → deploy bead(s) → IR-037
          ↓
-         US-038 → TD-038 → TP-038 → IP-038 → DP-038 → IR-038
+         US-038 → TD-038 → TP-038 → build bead(s) → deploy bead(s) → IR-038
 ```
 
 ## Naming Rules
@@ -160,7 +189,8 @@ FEAT-001 → US-036 → TD-036 → TP-036 → IP-036 → DP-036 → IR-036
 ### Consistency Rules
 1. **Number stays constant**: 036 throughout all phases
 2. **Name stays constant**: "list-mcp-servers" throughout
-3. **Only prefix changes**: US → TD → TP → IP → DP → IR
+3. **Only canonical artifact prefix changes**: US → TD → TP → IR
+4. **Build and Deploy use native bead IDs**: execution is tracked in upstream `bd`, not numbered HELIX files
 
 ### Valid Examples
 ✅ `US-001-initialize-ddx.md`
@@ -181,8 +211,8 @@ The workflow state is determined by which artifacts exist:
 If exists US-036: Story is in FRAME
 If exists TD-036: Story is in DESIGN
 If exists TP-036: Story is in TEST
-If exists IP-036: Story is in BUILD
-If exists DP-036: Story is in DEPLOY
+If `bd list --label helix --label phase:build --label story:US-036` returns open work: Story is in BUILD
+If `bd list --label helix --label phase:deploy --label story:US-036` returns open work: Story is in DEPLOY
 If exists IR-036: Story is in ITERATE
 ```
 

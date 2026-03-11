@@ -505,43 +505,35 @@ Task({
 
 ## Beads Integration
 
-### Enhanced Bead Schema
+### Upstream Beads Mapping
 
-```yaml
-# .beads/BEAD-001.yaml
-id: BEAD-001
-title: "Implement authentication handler"
-status: ready  # draft|blocked|ready|active|done
+Use upstream Beads fields rather than a custom bead YAML schema:
 
-# NEW: Spec binding
-spec: "docs/helix/01-frame/features/FEAT-001-auth.md"
-spec_sections:
-  - "## Implementation"
-  - "## API Endpoints"
+```bash
+bd create "Implement authentication handler" \
+  --type task \
+  --labels helix,phase:build,kind:build,area:auth \
+  --spec-id docs/helix/01-frame/features/FEAT-001-auth.md \
+  --description "Governing artifacts: FEAT-001-auth, TD-auth, TP-auth" \
+  --design "Provides: AuthProvider. Consumes: UserRepository from user-service." \
+  --acceptance "tests/integration/auth_test.go passes and permissions integration remains green."
 
-# NEW: Contract requirements
-contracts:
-  provides:
-    - name: AuthProvider
-      definition: contracts/auth.ts
-  consumes:
-    - name: UserRepository
-      from: user-service
+# User service must complete first
+bd dep add auth-abc123 user-def456
 
-# NEW: Integration requirements
-integration:
-  tests:
-    - "tests/integration/auth_test.go"
-  depends_on:
-    - BEAD-002  # User service must be complete first
-  blocks:
-    - BEAD-003  # Permissions service depends on this
-
-# Existing fields
-priority: P0
-estimate: M
-blocked_by: []
+# Permissions service depends on this bead
+bd dep auth-abc123 --blocks perms-ghi789
 ```
+
+Recommended mapping:
+
+- spec binding: native `spec-id`
+- governing artifact chain: `description`
+- contracts: `design` or structured metadata
+- integration tests: `acceptance`
+- blocking links: `bd dep add`, `bd dep --blocks`, or `--deps`
+- parent-child structure: native `parent`
+- discovered work: native `discovered-from` dependency type where useful
 
 ### Beads Plugin Checks
 
@@ -555,10 +547,12 @@ checks:
   - id: bead-spec-binding
     type: rule-set
     phase: frame
-    description: "Verify bead has governing spec"
+    description: "Verify bead has governing spec_id"
     rules:
+      - type: bead-field-required
+        field: spec_id
       - type: path-exists
-        path: "{{ .bead.spec }}"
+        path: "{{ .bead.spec_id }}"
         message: "Bead spec file does not exist"
 
   - id: bead-contracts-defined
@@ -568,16 +562,15 @@ checks:
     contracts:
       map: "contracts/integration-map.yaml"
     rules:
-      - type: bead-provides-registered
-      - type: bead-consumes-available
+      - type: bead-design-provides-registered
+      - type: bead-design-consumes-available
 
   - id: bead-integration-tests
     type: rule-set
     phase: test
     description: "Verify integration tests exist"
     rules:
-      - type: path-exists
-        path: "{{ range .bead.integration.tests }}{{ . }}{{ end }}"
+      - type: bead-acceptance-references-existing-tests
 
   - id: bead-ready-check
     type: agent
@@ -585,7 +578,7 @@ checks:
     description: "Verify bead is ready for implementation"
     prompt: prompts/bead-readiness.md
     inputs:
-      - "{{ .bead.spec }}"
+      - "{{ .bead.spec_id }}"
       - "contracts/integration-map.yaml"
 ```
 

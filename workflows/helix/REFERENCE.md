@@ -56,12 +56,23 @@ dun:
 
 ## 🛠️ Essential Commands
 
+See also:
+- [Execution Guide](EXECUTION.md)
+- [Beads Integration](BEADS.md)
+
 ### Workflow Management
 ```bash
 ddx init --workflow helix          # Initialize HELIX
 ddx workflow apply helix           # Apply workflow
 ddx validate <phase>               # Validate phase completion
 ddx feature add "<name>"           # Add new feature
+bd init                            # Initialize upstream Beads for HELIX execution tracking
+ddx workflow helix execute implementation
+ddx workflow helix execute implementation bd-abc123
+ddx workflow helix execute check
+ddx workflow helix execute reconcile-alignment repo
+ddx workflow helix execute backfill-helix-docs repo
+helix run
 ```
 
 ### Frame Phase
@@ -93,6 +104,17 @@ ddx apply prompts/helix/test/security-tests
 ddx apply prompts/helix/build/implementation
 ddx apply prompts/helix/build/refactoring
 ddx apply prompts/helix/build/code-review
+ddx workflow helix execute implementation
+ddx workflow helix execute implementation US-042
+```
+
+### Cross-Phase Control And Review
+```bash
+ddx workflow helix execute check
+ddx workflow helix execute check repo
+bd init
+ddx workflow helix execute reconcile-alignment repo
+ddx workflow helix execute backfill-helix-docs repo
 ```
 
 ## 📁 Directory Structure
@@ -118,6 +140,8 @@ project/
 │   ├── 05-deploy/             # Deployment docs
 │   │   └── deployment-plan.md
 │   └── 06-iterate/            # Metrics & lessons
+│       ├── alignment-reviews/
+│       ├── backfill-reports/
 │       └── metrics-reports/
 ├── src/                       # Source code
 ├── tests/                     # Test suites

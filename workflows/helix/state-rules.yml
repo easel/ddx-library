@@ -6,6 +6,9 @@ version: 1.0.0
 description: Test-driven development workflow with phase-based progression
 
 # Artifact patterns for state detection
+# Note: build/deploy execution is managed in upstream Beads (`bd`). Static file
+# matching is sufficient for canonical docs, but per-story build/deploy state
+# should be queried with the `query_command` hints below.
 artifact_patterns:
   # Story-level artifacts (vertical slices)
   story:
@@ -25,14 +28,16 @@ artifact_patterns:
       phase: test
 
     build:
-      pattern: "docs/helix/04-build/implementation-plans/IP-{id}-*.md"
-      type: implementation-plan
+      pattern: ".beads/"
+      type: build-bead
       phase: build
+      query_command: "bd list --label helix --label phase:build --label story:US-{id}"
 
     deploy:
-      pattern: "docs/helix/05-deploy/deployment-plans/DP-{id}-*.md"
-      type: deployment-plan
+      pattern: ".beads/"
+      type: deploy-bead
       phase: deploy
+      query_command: "bd list --label helix --label phase:deploy --label story:US-{id}"
 
     iterate:
       pattern: "docs/helix/06-iterate/iteration-reports/IR-{id}-*.md"
@@ -120,8 +125,7 @@ naming_conventions:
       US: "User Story (Frame)"
       TD: "Technical Design (Design)"
       TP: "Test Plan (Test)"
-      IP: "Implementation Plan (Build)"
-      DP: "Deployment Plan (Deploy)"
+      BEAD: "Execution tracked in upstream bd"
       IR: "Iteration Report (Iterate)"
 
   feature:
@@ -146,14 +150,14 @@ transitions:
 
     test_to_build:
       requires: ["TP-{id} exists", "tests failing"]
-      creates: "IP-{id}"
+      creates: "build bead issue(s) in bd"
 
     build_to_deploy:
-      requires: ["IP-{id} exists", "tests passing"]
-      creates: "DP-{id}"
+      requires: ["build bead issue(s) exist", "tests passing"]
+      creates: "deploy bead issue(s) in bd"
 
     deploy_to_iterate:
-      requires: ["DP-{id} exists", "deployed"]
+      requires: ["deploy bead issue(s) exist", "deployed"]
       creates: "IR-{id}"
 
 # Validation rules
@@ -165,8 +169,8 @@ validation:
     - rule: "TP cannot exist without TD"
       check: "If TP-{id} exists, then TD-{id} must exist"
 
-    - rule: "IP cannot exist without TP"
-      check: "If IP-{id} exists, then TP-{id} must exist"
+    - rule: "Build bead work should not start without TP"
+      check: "If a build bead query returns work for story {id}, then TP-{id} must exist"
 
   cross_references:
     - rule: "TD must reference US"

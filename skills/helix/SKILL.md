@@ -1,92 +1,101 @@
 ---
 name: helix-workflow
-description: HELIX is a test-driven development workflow for AI-assisted collaboration. Use when building features, implementing user stories, or when the user mentions HELIX, TDD, or needs structured development guidance.
+description: HELIX is a test-first development workflow with an authority-ordered planning stack and upstream Beads execution tracking. Use when the user mentions HELIX, wants structured TDD guidance, needs help moving through Frame/Design/Test/Build/Deploy/Iterate, wants implementation work aligned to requirements, design, and tests, wants a repo-wide alignment review or traceability audit, or wants to backfill missing HELIX documentation for an existing codebase.
 ---
 
 # HELIX Workflow Skill
 
-You are guiding development using the HELIX methodology - a test-driven development workflow with AI-assisted collaboration for building high-quality software iteratively.
+Guide development using the HELIX methodology: a test-first workflow with a
+canonical planning stack and an execution layer tracked in upstream Beads
+(`bd`).
 
-## The HELIX Phases
+## Use This Skill When
 
-```
-FRAME → DESIGN → TEST → BUILD → DEPLOY → ITERATE
-```
+- the user is building or refining a feature under HELIX
+- the repo has `docs/helix/` or `workflows/helix/`
+- the user wants TDD phase guidance or artifact sequencing
+- the user wants implementation kept aligned to requirements, design, and tests
+- the user wants a ready HELIX bead executed end-to-end with the right quality gates
+- the user wants to know whether more HELIX work remains or what the next action should be
+- the user wants a repo-wide reconciliation, drift analysis, or traceability audit
+- the user wants to backfill HELIX documentation from an existing repo or subsystem
 
-1. **Frame** - Define the problem and establish context
-2. **Design** - Architect the solution approach
-3. **Test** - Write failing tests that define behavior (Red phase)
-4. **Build** - Implement code to make tests pass (Green phase)
-5. **Deploy** - Release to production with monitoring
-6. **Iterate** - Learn and improve for the next cycle
+For alignment review, documentation backfill, or other cross-phase repo work, read:
 
-## Core Principles
+- [cross-phase-actions.md](references/cross-phase-actions.md)
 
-### Test-First Development (TDD)
-- Tests ARE the specification - they define exactly what the system should do
-- **Red**: Write a failing test that defines desired behavior
-- **Green**: Write minimal code to make the test pass
-- **Refactor**: Improve code while keeping tests green
+The separate `helix-alignment-review` skill remains available as a narrower
+specialist alias for review-heavy requests.
 
-### Human-AI Collaboration
-**Human responsibilities**: Problem definition, strategic decisions, code review, UX/business logic
-**AI responsibilities**: Pattern recognition, code generation, test case generation, documentation
+## HELIX Phases
 
-### Security Integration
-Security is built into every phase, not bolted on:
-- Frame: Security requirements and threat modeling
-- Design: Security architecture and controls
-- Test: Security test suites
-- Build: Secure coding practices
-- Deploy: Security monitoring
-- Iterate: Security metrics tracking
+`FRAME -> DESIGN -> TEST -> BUILD -> DEPLOY -> ITERATE`
 
-## Input Gates
+- `Frame`: define the problem, users, requirements, and acceptance criteria
+- `Design`: define architecture, contracts, and technical approach
+- `Test`: write failing tests that specify behavior
+- `Build`: implement the minimum code to make tests pass
+- `Deploy`: release with monitoring and rollback readiness
+- `Iterate`: learn from production and plan the next cycle
 
-Each phase has gates that validate previous outputs:
-- **Design** cannot start until Frame outputs are validated
-- **Test** cannot start until Design is reviewed
-- **Build** cannot start until Tests are written and failing
-- **Deploy** cannot start until all Tests pass
-- **Iterate** begins once deployed and operational
+## Authority Order
 
-## How to Guide Users
+When artifacts disagree, prefer:
 
-### Starting a New Feature
-1. Ask what they're building (Frame)
-2. Help define requirements and acceptance criteria
-3. Guide through design decisions
-4. Write tests BEFORE implementation
-5. Implement to make tests pass
-6. Review and refactor
+1. Product Vision
+2. Product Requirements
+3. Feature Specs / User Stories
+4. Architecture / ADRs
+5. Solution / Technical Designs
+6. Test Plans / Tests
+7. Implementation Plans
+8. Source Code / Build Artifacts
 
-### Key Questions Per Phase
+Tests govern build execution, but they do not override upstream requirements or
+design.
 
-**Frame**: What problem are we solving? Who are the users? What are the acceptance criteria?
+## Execution Layer
 
-**Design**: What's the architecture? What are the components? What are the interfaces?
+HELIX uses upstream Beads (`bd`) for execution tracking.
 
-**Test**: What tests prove this works? What edge cases exist? What could fail?
+- Use `bd` issues, dependencies, parents, `spec-id`, and labels.
+- Do not invent custom bead files or custom status taxonomies.
+- Typical labels: `helix`, plus one of `phase:build`, `phase:deploy`,
+  `phase:iterate`, or `phase:review`.
 
-**Build**: What's the minimal code to pass tests? Can we refactor?
+If the repo vendors DDx HELIX, read:
 
-**Deploy**: Is it ready for users? What monitoring is needed?
+- `workflows/helix/README.md`
+- `workflows/helix/BEADS.md`
+- `workflows/helix/actions/check.md` when the user wants queue health or the next action
+- `workflows/helix/actions/implementation.md` when the user wants ready work executed
+- relevant phase README and artifact prompts/templates
 
-**Iterate**: What did we learn? What should improve?
+## How To Work
 
-## Artifacts Reference
+1. Identify the current phase from the docs and tests.
+2. Do the minimum correct work for that phase.
+3. Preserve traceability to upstream artifacts.
+4. Keep Build subordinate to failing tests.
+5. If implementation reveals plan drift, refine upstream artifacts explicitly.
 
-### Frame Phase Artifacts
-- PRD (Product Requirements Document)
-- User Stories
-- Security Requirements
-- Threat Model
+## Core Questions
 
-### Design Phase Artifacts
-- Technical Design
-- Architecture Decision Records (ADRs)
-- API Contracts
-- Data Design
+- `Frame`: what problem are we solving, for whom, and how will we know it works?
+- `Design`: what structure, contracts, and constraints satisfy the requirement?
+- `Test`: what failing tests prove the behavior?
+- `Build`: what is the minimum implementation to make those tests pass?
+- `Deploy`: how do we release safely and observe health?
+- `Iterate`: what did we learn, and what follow-up work belongs in `bd`?
+
+## Notes
+
+- Use TDD strictly: Red -> Green -> Refactor.
+- Security belongs in every phase.
+- Escalate contradictions instead of patching around them in code.
+- For repo-wide reconciliation or traceability work, use the alignment review flow.
+- For repo-wide documentation reconstruction, use the backfill flow rather than inventing requirements from code alone.
+- When the ready queue drains, use the check flow before deciding to align, backfill, wait, or stop.
 
 ### Test Phase Artifacts
 - Test Plan
