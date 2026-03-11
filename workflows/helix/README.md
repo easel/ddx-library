@@ -50,6 +50,7 @@ graph TB
 
 ## Phases
 
+0. **Discover** (optional) - Validate the opportunity before committing to Frame
 1. **Frame** - Define the problem and establish context
 2. **Design** - Architect the solution approach
 3. **Test** - Write failing tests that define system behavior (Red phase)
@@ -59,7 +60,8 @@ graph TB
 
 ## Input Gates
 
-Each phase (except Frame) has input gates that validate the previous phase's outputs before allowing progression:
+Each phase after Frame has input gates that validate the previous phase's
+outputs before allowing progression:
 
 - **Design** cannot start until Frame outputs are validated
 - **Test** cannot start until Design is reviewed and approved
@@ -73,13 +75,13 @@ This test-first approach ensures specifications drive implementation and quality
 
 When HELIX artifacts disagree, resolve the conflict using this authority order:
 
-1. **Product Vision** (`00-discover/product-vision.md`)
-2. **Product Requirements** (`01-frame/prd.md`)
-3. **Feature Specifications and User Stories** (`01-frame/features/`, `01-frame/user-stories/`)
-4. **Architecture and ADRs** (`02-design/architecture.md`, `02-design/adr/`)
-5. **Solution Designs and Technical Designs** (`02-design/solution-designs/`, `02-design/technical-designs/`)
-6. **Test Plans and Executable Tests** (`03-test/`, `tests/`)
-7. **Implementation Plans** (`04-build/implementation-plan.md`)
+1. **Product Vision** (`docs/helix/00-discover/product-vision.md`)
+2. **Product Requirements** (`docs/helix/01-frame/prd.md`)
+3. **Feature Specifications and User Stories** (`docs/helix/01-frame/features/`, `docs/helix/01-frame/user-stories/`)
+4. **Architecture and ADRs** (`docs/helix/02-design/architecture.md`, `docs/helix/02-design/adr/`)
+5. **Solution Designs and Technical Designs** (`docs/helix/02-design/solution-designs/`, `docs/helix/02-design/technical-designs/`)
+6. **Test Plans and Executable Tests** (`docs/helix/03-test/`, `tests/`)
+7. **Implementation Plans** (`docs/helix/04-build/implementation-plan.md`)
 8. **Source Code and Build Artifacts** (`src/`, generated outputs)
 
 ### Conflict Resolution Rules

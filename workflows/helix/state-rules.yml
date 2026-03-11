@@ -3,7 +3,7 @@
 
 name: helix
 version: 1.0.0
-description: Test-driven development workflow with phase-based progression
+description: Test-driven development workflow with optional discovery and phase-based progression
 
 # Artifact patterns for state detection
 # Note: build/deploy execution is managed in upstream Beads (`bd`). Static file
@@ -68,6 +68,12 @@ artifact_patterns:
 
   # Phase-level artifacts (project-wide)
   project:
+    discover:
+      - pattern: "docs/helix/00-discover/product-vision.md"
+        type: product-vision
+      - pattern: "docs/helix/00-discover/business-case.md"
+        type: business-case
+
     frame:
       - pattern: "docs/helix/01-frame/prd.md"
         type: product-requirements
@@ -97,7 +103,7 @@ artifact_patterns:
 # Phase detection strategy
 phase_detection:
   strategy: highest-artifact  # Use the highest phase artifact found
-  order: [frame, design, test, build, deploy, iterate]
+  order: [discover, frame, design, test, build, deploy, iterate]
 
   # Additional checks for phase determination
   additional_checks:

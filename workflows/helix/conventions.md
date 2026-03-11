@@ -34,6 +34,7 @@ project-root/
 ├── .beads/                  # Upstream bd workspace for execution tracking
 ├── docs/
 │   ├── helix/                  # HELIX phase artifacts
+│   │   ├── 00-discover/        # Optional opportunity validation
 │   │   ├── parking-lot.md       # Deferred and future work registry
 │   │   ├── 01-frame/          # Problem definition & requirements
 │   │   ├── 02-design/         # Architecture & design decisions
@@ -59,52 +60,64 @@ project-root/
 Each phase directory contains artifacts directly (no `artifacts/` subdirectory):
 
 ```
+00-discover/
+├── README.md
+├── product-vision.md
+├── business-case.md
+├── competitive-analysis.md
+└── opportunity-canvas.md
+
 01-frame/
-├── README.md                   # Phase overview and status
-├── prd/                       # Product requirements
-├── user-stories/              # User stories and scenarios
-├── stakeholder-map/           # Stakeholder analysis
-├── compliance-requirements/   # Regulatory requirements
-├── security-requirements/     # Security requirements
-└── threat-model/              # Threat modeling
+├── README.md
+├── prd.md
+├── principles.md
+├── feature-registry.md
+├── user-stories/
+├── features/
+├── stakeholder-map.md
+├── compliance-requirements.md
+├── security-requirements.md
+└── threat-model.md
 
 02-design/
-├── README.md                   # Phase overview and status
-├── adr/                       # Architecture Decision Records
-├── architecture/              # System architecture
-├── solution-design/           # Solution designs
-├── contracts/                 # API contracts
-├── data-design/              # Data models
-└── security-architecture/    # Security architecture
+├── README.md
+├── architecture.md
+├── adr/
+├── solution-designs/
+├── technical-designs/
+├── contracts/
+├── data-design.md
+└── security-architecture.md
 
 03-test/
-├── README.md                   # Phase overview and status
-├── test-plan/                 # Test strategy
-├── test-procedures/           # Test procedures
-└── security-tests/            # Security test plans
+├── README.md
+├── test-plan.md
+├── test-procedures.md
+├── test-plans/
+└── security-tests.md
 
 04-build/
-├── README.md                   # Phase overview and status
-├── implementation-plan/       # Development plans
-├── build-procedures/          # Build procedures
-└── secure-coding/            # Secure coding guidelines
+├── README.md
+├── implementation-plan.md
+├── build-procedures.md
+└── secure-coding-checklist.md
 
 05-deploy/
-├── README.md                   # Phase overview and status
-├── deployment-checklist/      # Deployment procedures
-├── runbook/                  # Operational runbooks
-├── monitoring-setup/         # Monitoring configuration
-└── security-monitoring/      # Security monitoring
+├── README.md
+├── deployment-checklist.md
+├── runbook.md
+├── monitoring-setup.md
+└── security-monitoring.md
 
 06-iterate/
-├── README.md                   # Phase overview and status
-├── metrics-dashboard/         # Performance metrics
-├── feedback-analysis/        # User feedback
-├── lessons-learned/          # Retrospectives
-├── alignment-reviews/        # Cross-phase reconciliation reports
-├── backfill-reports/         # Research-first documentation backfill reports
-├── improvement-backlog/      # Enhancement ideas
-└── refinements/              # Story refinement logs and tracking
+├── README.md
+├── metrics-dashboard.md
+├── feedback-analysis.md
+├── lessons-learned.md
+├── alignment-reviews/
+├── backfill-reports/
+├── improvement-backlog.md
+└── refinements/
 ```
 
 ### Parking Lot Registry
@@ -189,10 +202,10 @@ Use relative paths to reference artifacts across phases:
 
 ```markdown
 # In 02-design/architecture.md
-See requirements in [../01-frame/prd/requirements.md](../01-frame/prd/requirements.md)
+See requirements in [../01-frame/prd.md](../01-frame/prd.md)
 
 # In 03-test/test-plan.md
-Based on architecture in [../02-design/architecture/system.md](../02-design/architecture/system.md)
+Based on architecture in [../02-design/architecture.md](../02-design/architecture.md)
 ```
 
 ### Traceability
@@ -224,10 +237,12 @@ Place in `docs/operations/`:
 ### Strategic Documentation
 
 Place in `docs/strategy/`:
-- Product vision
 - Roadmaps
 - Market analysis
 - Competitive analysis
+
+Use `docs/helix/00-discover/` for HELIX discovery artifacts that participate in
+the canonical authority stack.
 
 ## Migration from Existing Documentation
 
@@ -264,12 +279,10 @@ grep -r "\.\./" docs/helix/ | grep -v "helix"
 Use HELIX workflow templates to create consistent artifacts:
 
 ```bash
-# Apply templates from helix workflow
-ddx apply workflows/helix/phases/01-frame/artifacts/prd
-
-# Copy template structure
-cp -r $DDX_HOME/workflows/helix/phases/01-frame/artifacts/prd/template.md \
-      docs/helix/01-frame/prd/
+# Review the artifact prompt and template
+sed -n '1,120p' workflows/helix/phases/01-frame/artifacts/prd/prompt.md
+cp -f $DDX_HOME/workflows/helix/phases/01-frame/artifacts/prd/template.md \
+      docs/helix/01-frame/prd.md
 ```
 
 ## Best Practices
@@ -292,7 +305,7 @@ A: Yes, phases can have project-specific subdirectories. Document them in the ph
 A: No, code belongs in the project's source directories. Documentation only in helix.
 
 ### Q: How do I handle multiple features in parallel?
-A: Create feature-specific subdirectories within each artifact type (e.g., `prd/feature-a/`, `prd/feature-b/`).
+A: Keep the shared project docs stable and add separate feature/story files in the canonical phase directories, for example `docs/helix/01-frame/features/FEAT-001-*.md`, `docs/helix/02-design/solution-designs/SD-001-*.md`, and `docs/helix/01-frame/user-stories/US-001-*.md`.
 
 ### Q: What about diagrams and images?
 A: Store them alongside the documents that reference them, or in a phase-level `images/` directory.

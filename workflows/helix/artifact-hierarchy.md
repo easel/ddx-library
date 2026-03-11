@@ -139,6 +139,11 @@ All HELIX artifacts are under `docs/helix/` to support multiple workflows:
 ```
 docs/
 └── helix/                              # HELIX workflow artifacts
+    ├── 00-discover/
+    │   ├── product-vision.md          # Optional project-level discovery
+    │   ├── business-case.md
+    │   ├── competitive-analysis.md
+    │   └── opportunity-canvas.md
     ├── 01-frame/
     │   ├── prd.md                     # Project-level
     │   ├── principles.md               # Project-level

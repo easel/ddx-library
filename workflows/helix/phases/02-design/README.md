@@ -25,7 +25,7 @@ Before starting Design, verify Frame outputs:
 ## Artifacts
 
 ### 1. Solution Design
-**Location**: `docs/design/solution-designs/SD-XXX-[name].md`
+**Location**: `docs/helix/02-design/solution-designs/SD-XXX-[name].md`
 
 Bridges business requirements to technical implementation:
 - **Requirements Mapping**: Transform functional/non-functional requirements to technical capabilities
@@ -35,7 +35,7 @@ Bridges business requirements to technical implementation:
 - **Technology Rationale**: Why specific technologies were chosen
 
 ### 2. Architecture Diagrams
-**Location**: `docs/design/architecture.md`
+**Location**: `docs/helix/02-design/architecture.md`
 
 Visual system documentation using C4 model:
 - **System Context**: How the system fits in the larger ecosystem
@@ -45,7 +45,7 @@ Visual system documentation using C4 model:
 - **Data Flow**: How information moves through the system
 
 ### 3. API/Interface Contracts
-**Location**: `docs/design/contracts/API-XXX-[name].md`
+**Location**: `docs/helix/02-design/contracts/API-XXX-[name].md`
 
 Defines all external interfaces:
 - **CLI Contracts**: Command structure, options, input/output formats
@@ -55,7 +55,7 @@ Defines all external interfaces:
 - **Error Contracts**: Error codes, messages, recovery actions
 
 ### 4. Architecture Decision Records (ADRs)
-**Location**: `docs/design/adr/ADR-XXX-[title].md`
+**Location**: `docs/helix/02-design/adr/ADR-XXX-[title].md`
 
 Documents significant architectural decisions:
 - **Decision Context**: Problem and constraints
@@ -65,7 +65,7 @@ Documents significant architectural decisions:
 - **Success Criteria**: How to validate the decision
 
 ### 5. Data Design
-**Location**: `docs/design/data-design.md`
+**Location**: `docs/helix/02-design/data-design.md`
 
 Comprehensive data architecture:
 - **Conceptual Model**: Business entities and relationships

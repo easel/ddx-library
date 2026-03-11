@@ -373,7 +373,7 @@ AI excels at generating comprehensive test suites from specifications, but human
 - **Generated Tests**: `tests/`
   - `tests/unit/` - Unit tests
   - `tests/integration/` - Integration tests
-  - `tests/contracts/` - Contract tests
+  - `tests/contract/` - Contract tests
   - `tests/e2e/` - End-to-end tests
   - `tests/acceptance/` - Acceptance tests
 
