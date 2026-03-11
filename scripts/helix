@@ -139,7 +139,9 @@ backfill_prompt() {
 Use the HELIX backfill action at ${helix_docs_root}/actions/backfill-helix-docs.md.
 Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/templates/backfill-report.md as needed.
 Execute in the current repository rooted at ${target_root}.
+This is a writable live session: run real bd commands, update docs/helix/, and do not claim that you need another session unless a concrete command actually fails.
 Backfill scope: ${scope}.
+Return the required BACKFILL_STATUS, BACKFILL_REPORT, and RESEARCH_EPIC trailer lines exactly.
 Follow the action exactly.
 EOF
 }
@@ -158,6 +160,18 @@ helix_ready_count() {
 
 extract_next_action() {
   printf '%s\n' "$1" | grep -E '^NEXT_ACTION: ' | head -n1 | sed 's/^NEXT_ACTION: //'
+}
+
+extract_backfill_status() {
+  printf '%s\n' "$1" | grep -E '^BACKFILL_STATUS: ' | head -n1 | sed 's/^BACKFILL_STATUS: //'
+}
+
+extract_backfill_report() {
+  printf '%s\n' "$1" | grep -E '^BACKFILL_REPORT: ' | head -n1 | sed 's/^BACKFILL_REPORT: //'
+}
+
+extract_research_epic() {
+  printf '%s\n' "$1" | grep -E '^RESEARCH_EPIC: ' | head -n1 | sed 's/^RESEARCH_EPIC: //'
 }
 
 parse_common_flags() {
@@ -201,7 +215,57 @@ run_alignment() {
 
 run_backfill() {
   local scope="${1:-repo}"
-  run_agent_prompt "$(backfill_prompt "$scope")"
+
+  if (( dry_run )); then
+    run_agent_prompt "$(backfill_prompt "$scope")"
+    return 0
+  fi
+
+  need_cmd bd
+  ensure_beads_initialized
+
+  local output
+  output="$(run_agent_prompt "$(backfill_prompt "$scope")")"
+  printf '%s\n' "$output"
+
+  local status
+  status="$(extract_backfill_status "$output" || true)"
+  if [[ -z "$status" ]]; then
+    echo "helix: backfill output missing BACKFILL_STATUS trailer" >&2
+    return 1
+  fi
+
+  local report
+  report="$(extract_backfill_report "$output" || true)"
+  if [[ -z "$report" ]]; then
+    echo "helix: backfill output missing BACKFILL_REPORT trailer" >&2
+    return 1
+  fi
+
+  if [[ ! -f "$target_root/$report" ]]; then
+    echo "helix: declared backfill report does not exist: $report" >&2
+    return 1
+  fi
+
+  local epic
+  epic="$(extract_research_epic "$output" || true)"
+  if [[ -n "$epic" ]]; then
+    printf 'helix: research epic=%s\n' "$epic" >&2
+  fi
+  printf 'helix: backfill report=%s\n' "$report" >&2
+
+  case "$status" in
+    COMPLETE|GUIDANCE_NEEDED)
+      return 0
+      ;;
+    BLOCKED)
+      return 1
+      ;;
+    *)
+      echo "helix: unknown BACKFILL_STATUS: $status" >&2
+      return 1
+      ;;
+  esac
 }
 
 run_loop() {

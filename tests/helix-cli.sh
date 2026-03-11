@@ -29,6 +29,20 @@ assert_contains() {
   fi
 }
 
+assert_file_exists() {
+  local path="$1"
+  local message="$2"
+  [[ -f "$path" ]] || fail "$message"
+}
+
+assert_fails() {
+  local message="$1"
+  shift
+  if "$@"; then
+    fail "$message"
+  fi
+}
+
 make_mock_bin() {
   local root="$1"
   mkdir -p "$root/bin" "$root/state"
@@ -83,6 +97,7 @@ set -euo pipefail
 
 state_root="${MOCK_STATE_ROOT:?}"
 payload="$*"
+mode="${MOCK_BACKFILL_MODE:-complete}"
 
 record() {
   printf '%s\n' "$1" >> "$state_root/calls.log"
@@ -116,7 +131,44 @@ case "$payload" in
     ;;
   *"backfill action"*)
     record backfill
-    echo "backfill complete"
+    case "$mode" in
+      complete)
+        mkdir -p docs/helix/06-iterate/backfill-reports
+        report="docs/helix/06-iterate/backfill-reports/BF-2099-01-01-repo.md"
+        printf '# mock backfill report\n' > "$report"
+        echo "Backfill Metadata"
+        echo "BACKFILL_STATUS: COMPLETE"
+        echo "BACKFILL_REPORT: $report"
+        echo "RESEARCH_EPIC: bd-mock-backfill"
+        ;;
+      guidance)
+        mkdir -p docs/helix/06-iterate/backfill-reports
+        report="docs/helix/06-iterate/backfill-reports/BF-2099-01-01-guidance.md"
+        printf '# mock guidance report\n' > "$report"
+        echo "Backfill Metadata"
+        echo "BACKFILL_STATUS: GUIDANCE_NEEDED"
+        echo "BACKFILL_REPORT: $report"
+        echo "RESEARCH_EPIC: bd-mock-backfill"
+        ;;
+      missing-report)
+        echo "Backfill Metadata"
+        echo "BACKFILL_STATUS: COMPLETE"
+        echo "RESEARCH_EPIC: bd-mock-backfill"
+        ;;
+      blocked)
+        mkdir -p docs/helix/06-iterate/backfill-reports
+        report="docs/helix/06-iterate/backfill-reports/BF-2099-01-01-blocked.md"
+        printf '# mock blocked report\n' > "$report"
+        echo "Backfill Metadata"
+        echo "BACKFILL_STATUS: BLOCKED"
+        echo "BACKFILL_REPORT: $report"
+        echo "RESEARCH_EPIC: bd-mock-backfill"
+        ;;
+      *)
+        echo "unsupported mock backfill mode: $mode" >&2
+        exit 1
+        ;;
+    esac
     ;;
   *)
     record other
@@ -179,6 +231,17 @@ test_check_dry_run() {
   rm -rf "$root"
 }
 
+test_backfill_dry_run() {
+  local root
+  root="$(make_workspace)"
+  local output
+  output="$(run_helix "$root" backfill --dry-run repo)"
+  assert_contains "$output" "actions/backfill-helix-docs.md" "backfill dry-run should reference backfill action"
+  assert_contains "$output" "This is a writable live session" "backfill dry-run should assert writable live execution"
+  assert_contains "$output" "BACKFILL_STATUS" "backfill dry-run should require machine-readable trailer"
+  rm -rf "$root"
+}
+
 test_run_stops_after_queue_drains() {
   local root
   root="$(make_workspace)"
@@ -221,6 +284,32 @@ test_run_auto_aligns_once() {
   rm -rf "$root"
 }
 
+run_backfill_missing_report() {
+  local root="$1"
+  MOCK_BACKFILL_MODE=missing-report run_helix "$root" backfill repo >/dev/null
+}
+
+test_backfill_requires_report_marker() {
+  local root
+  root="$(make_workspace)"
+  assert_fails "backfill should fail when the trailer omits BACKFILL_REPORT" \
+    run_backfill_missing_report "$root"
+  rm -rf "$root"
+}
+
+test_backfill_creates_report() {
+  local root
+  root="$(make_workspace)"
+  local output
+  output="$(run_helix "$root" backfill repo)"
+  assert_contains "$output" "BACKFILL_STATUS: COMPLETE" "backfill should report completion"
+  assert_file_exists "$root/work/docs/helix/06-iterate/backfill-reports/BF-2099-01-01-repo.md" "backfill should create the declared report"
+  local calls
+  calls="$(cat "$root/state/calls.log")"
+  assert_eq $'backfill' "$calls" "backfill should invoke the backfill action once"
+  rm -rf "$root"
+}
+
 test_installer_creates_launcher() {
   local root
   root="$(make_workspace)"
@@ -249,9 +338,12 @@ run_test() {
 
 run_test "help" test_help
 run_test "check dry-run" test_check_dry_run
+run_test "backfill dry-run" test_backfill_dry_run
 run_test "run stops after drain" test_run_stops_after_queue_drains
 run_test "periodic alignment" test_run_periodic_alignment
 run_test "auto-align" test_run_auto_aligns_once
+run_test "backfill requires report marker" test_backfill_requires_report_marker
+run_test "backfill creates report" test_backfill_creates_report
 run_test "installer launcher" test_installer_creates_launcher
 
 echo "PASS: ${test_count} helix wrapper tests"

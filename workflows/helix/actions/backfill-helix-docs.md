@@ -35,6 +35,19 @@ This action is not the same as alignment review.
 Backfill must escalate ambiguity earlier than alignment review. Where confidence
 is low, ask the user before finalizing canonical artifacts.
 
+## Execution Assumptions
+
+When this action is launched by `helix backfill`, assume you are running inside
+an active writable session rooted at the target repository.
+
+- use live `bd` commands for tracker state
+- write directly to `docs/helix/` when evidence supports canonical updates
+- do not claim that you need a different session, different permissions, or a
+  separate "live bd" environment unless a concrete command actually fails
+
+If a command fails, report the exact command and the observed error. Do not
+invent capability limits.
+
 ## Authority and Evidence Rules
 
 When authority exists, use this order:
@@ -79,6 +92,13 @@ Use native upstream Beads only. Follow:
 - <https://steveyegge.github.io/beads/>
 
 Do not create custom HELIX bead files.
+
+Use live tracker commands such as `bd ready`, `bd show`, `bd query`, and
+`bd list` as needed for queue state. Do not treat `.beads/backup/`,
+checked-in planning snapshots, or exported JSON as the primary tracker source
+when live `bd` is functioning. Those files are fallback evidence only when a
+live `bd` command actually fails, and must be labeled as secondary evidence in
+the report.
 
 ### Research Structure
 
@@ -154,6 +174,7 @@ evidence extraction pass are complete for the relevant scope.
 1. Determine the backfill scope.
 2. Verify upstream Beads is available.
    - If `.beads/` is missing, initialize with `bd init`.
+   - Use live `bd` output as the authoritative queue source for the run.
 3. Inventory existing documentation:
    - `docs/helix/`
    - non-HELIX docs
@@ -174,6 +195,32 @@ evidence extraction pass are complete for the relevant scope.
    - one research bead per functional area
    - child review beads for folders and file-sets as required
 9. Record the epic ID, bead IDs, and coverage baseline in the backfill report.
+
+## Completion Contract
+
+Do not stop at an analysis-only summary if the repository is writable and live
+`bd` commands succeed.
+
+Before returning, you must do all applicable work that is supported by the
+available evidence:
+
+1. create or update the research epic and review beads in live `bd`
+2. create or update the durable backfill report under
+   `docs/helix/06-iterate/backfill-reports/`
+3. create or update any high-confidence canonical HELIX artifacts justified by
+   the scope
+4. record unresolved ambiguity in the report instead of silently stopping
+
+The only acceptable non-complete outcomes are:
+
+- `GUIDANCE_NEEDED`: guidance is required before low-confidence canonization,
+  but the durable backfill report has still been written or updated
+- `BLOCKED`: a concrete command failed and prevented normal completion; cite the
+  exact failing command and error, and write the report if the filesystem still
+  allows it
+
+Never end by telling the user to rerun the action in a different session unless
+you actually attempted the command that failed.
 
 ## PHASE 1 - Current-State Research
 
@@ -402,3 +449,9 @@ Produce these sections in order:
 11. Next Recommended Steps
 
 Be precise, evidence-driven, and conservative about canonizing uncertain intent.
+
+After those sections, emit this machine-readable trailer exactly:
+
+`BACKFILL_STATUS: COMPLETE|GUIDANCE_NEEDED|BLOCKED`
+`BACKFILL_REPORT: docs/helix/06-iterate/backfill-reports/<file>.md`
+`RESEARCH_EPIC: <bd-id|none>`
