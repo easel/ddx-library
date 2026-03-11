@@ -382,23 +382,19 @@ deploy:
 
 ## Using AI Assistance
 
-When working with AI assistants during Deploy:
+Deploy execution is driven by deploy beads through `helix implement` or
+`helix run`. Use the prompts and templates under
+`workflows/helix/phases/05-deploy/artifacts/` to prepare rollout and
+operational documentation.
 
-```bash
-# Generate deployment scripts
-ddx apply prompts/helix/deploy/deployment-scripts
+Common entry points:
+- `artifacts/deployment-checklist/`
+- `artifacts/monitoring-setup/`
+- `artifacts/runbook/`
+- `artifacts/story-deployment-plan/`
 
-# Create monitoring configuration
-ddx apply prompts/helix/deploy/monitoring-setup
-
-# Generate runbook
-ddx apply prompts/helix/deploy/runbook
-
-# Create rollback procedures
-ddx apply actions/helix/deploy/rollback-procedures
-```
-
-AI excels at generating deployment automation, monitoring configurations, and documentation, but human judgment is critical for go/no-go decisions and incident response.
+AI is useful for rollout documentation, checklists, and observability setup.
+Go/no-go decisions, incident handling, and rollback approval remain human-owned.
 
 ## File Organization
 

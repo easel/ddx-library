@@ -457,44 +457,21 @@ Remember: Frame defines the "what" and "why" - Design will define the "how".
 
 ## Using AI Assistance
 
-When working with AI assistants during Frame:
+Frame prompts live beside their templates under
+`workflows/helix/phases/01-frame/artifacts/`. Start with the relevant
+`prompt.md`, copy the matching template into `docs/helix/01-frame/`, and fill
+it in with project-specific content.
 
-### Standard Frame Artifacts
-```bash
-# Generate initial PRD from project idea
-ddx apply prompts/helix/frame/prd
+Common entry points:
+- `artifacts/prd/`
+- `artifacts/specification/`
+- `artifacts/user-stories/`
+- `artifacts/research-plan/`, `artifacts/feasibility-study/`,
+  `artifacts/research-synthesis/`, and `artifacts/assumption-testing/` when
+  uncertainty must be reduced before design
 
-# Validate user stories for completeness
-ddx apply prompts/helix/frame/user-stories
-
-# Check specification for gaps
-ddx apply prompts/helix/frame/specification
-```
-
-### Research Artifacts (When Uncertainty Exists)
-```bash
-# Create research plan for unknown requirements
-ddx apply prompts/helix/frame/research-plan
-
-# Conduct feasibility analysis
-ddx apply prompts/helix/frame/feasibility-study
-
-# Synthesize research findings into insights
-ddx apply prompts/helix/frame/research-synthesis
-
-# Validate assumptions with evidence
-ddx apply prompts/helix/frame/assumption-testing
-```
-
-### AI Research Capabilities
-AI assistants excel at:
-- **Pattern Recognition**: Identifying trends across user interviews and market data
-- **Synthesis**: Combining findings from multiple research sources
-- **Gap Analysis**: Spotting missing research areas or unvalidated assumptions
-- **Risk Assessment**: Identifying potential risks across technical, business, and market dimensions
-- **Competitive Analysis**: Analyzing competitor information and identifying market gaps
-
-The AI can help ensure completeness but human judgment is essential for business decisions, priority setting, and stakeholder alignment.
+AI is useful for synthesis, gap detection, and research summarization. Product
+scope, prioritization, and stakeholder tradeoffs remain human-owned decisions.
 
 ---
 

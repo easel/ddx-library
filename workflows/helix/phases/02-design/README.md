@@ -429,45 +429,22 @@ Implementation must match contracts exactly. No undocumented behavior.
 
 ## Using AI Assistance
 
-When working with AI assistants during Design:
+Design prompts live under `workflows/helix/phases/02-design/artifacts/`.
+Open the relevant `prompt.md`, use the adjacent template, and write outputs to
+the canonical `docs/helix/02-design/` paths defined in each artifact.
 
-### Standard Design Artifacts
-```bash
-# Generate contracts from requirements
-ddx apply prompts/helix/design/contracts
+Common entry points:
+- `artifacts/solution-design/`
+- `artifacts/technical-design/`
+- `artifacts/contracts/`
+- `artifacts/adr/`
+- `artifacts/security-architecture/`
+- `artifacts/tech-spike/` and `artifacts/proof-of-concept/` for bounded
+  investigation work
 
-# Create test specifications
-ddx apply prompts/helix/design/test-specs
-
-# Validate architecture simplicity
-ddx apply prompts/helix/design/complexity-check
-```
-
-### Technical Investigation (When Technical Uncertainty Exists)
-```bash
-# Create technical spike plan
-ddx apply prompts/helix/design/tech-spike
-
-# Plan proof of concept development
-ddx apply prompts/helix/design/proof-of-concept
-
-# Analyze spike findings and create recommendations
-ddx apply prompts/helix/design/spike-analysis
-
-# Synthesize PoC results into design decisions
-ddx apply prompts/helix/design/poc-analysis
-
-# Generate ADR from technical investigation findings
-ddx apply prompts/helix/design/adr-from-investigation
-```
-
-### AI Technical Investigation Capabilities
-AI assistants excel at:
-- **Comparative Analysis**: Evaluating trade-offs between technical approaches
-- **Risk Assessment**: Identifying technical risks and mitigation strategies
-- **Performance Analysis**: Processing benchmark data and identifying patterns
-- **Integration Planning**: Analyzing integration complexity and approaches
-- **Code Review**: Analyzing spike and PoC code for best practices and improvements
+AI is useful for tradeoff analysis, option comparison, and documentation
+drafting. Architectural decisions, acceptance of complexity, and final design
+sign-off remain human responsibilities.
 
 The AI excels at generating comprehensive contracts and test cases but human judgment is essential for architectural decisions and technical trade-offs.
 

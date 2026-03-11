@@ -385,34 +385,15 @@ Track these metrics across iterations to measure improvement:
 
 ## AI-Powered Analysis Tools
 
-Leverage these AI capabilities during Iterate:
+Leverage these AI capabilities during Iterate by working from the prompt and
+template pairs in the artifact directories:
 
-### Automated Analysis
-```bash
-# Generate comprehensive metrics analysis
-ddx apply prompts/helix/iterate/metrics-analysis
+- `artifacts/metrics-dashboard/` for trend and KPI analysis
+- `artifacts/feedback-analysis/` for clustering user and operator feedback
+- `artifacts/lessons-learned/` for retrospective synthesis
 
-# Synthesize user feedback with sentiment
-ddx apply prompts/helix/iterate/feedback-synthesis
-
-# Identify performance optimization opportunities
-ddx apply prompts/helix/iterate/performance-optimization
-
-# Extract lessons learned from iteration
-ddx apply prompts/helix/iterate/lessons-extraction
-```
-
-### Predictive Insights
-```bash
-# Predict potential issues in next iteration
-ddx apply prompts/helix/iterate/risk-prediction
-
-# Forecast capacity needs
-ddx apply prompts/helix/iterate/capacity-planning
-
-# Identify technical debt impact
-ddx apply prompts/helix/iterate/debt-analysis
-```
+- `artifacts/improvement-backlog/` and `artifacts/iteration-planning/` for
+  turning observations into scheduled follow-up work
 
 ## Integration with Next Cycle
 
@@ -445,23 +426,24 @@ The Iterate phase outputs directly influence the next Frame phase:
 
 ## Using AI Assistance
 
-When working with AI assistants during Iterate:
+Iterate work is decided through `helix check` and the canonical cross-phase
+actions:
+- `workflows/helix/actions/reconcile-alignment.md`
+- `workflows/helix/actions/backfill-helix-docs.md`
 
-```bash
-# Comprehensive iteration analysis
-ddx workflow iterate analyze --comprehensive
+For retrospective and planning artifacts, use the prompts and templates under
+`workflows/helix/phases/06-iterate/artifacts/`.
 
-# Generate improvement recommendations
-ddx workflow iterate recommend --priority high
+Common entry points:
+- `artifacts/feedback-analysis/`
+- `artifacts/improvement-backlog/`
+- `artifacts/iteration-planning/`
+- `artifacts/lessons-learned/`
+- `artifacts/metrics-dashboard/`
+- `artifacts/story-iteration-report/`
 
-# Create next iteration plan
-ddx workflow iterate plan --based-on learnings
-
-# Update knowledge base
-ddx workflow iterate knowledge --update
-```
-
-The AI excels at pattern recognition and data synthesis but human judgment is essential for strategic decisions and priority setting.
+AI is useful for synthesis, clustering feedback, and surfacing patterns. Human
+judgment remains responsible for prioritization, tradeoffs, and scheduling.
 
 
 ## File Organization

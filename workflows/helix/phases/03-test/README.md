@@ -345,23 +345,20 @@ tests/
 
 ## Using AI Assistance
 
-When working with AI assistants during Test:
+Test prompts live under `workflows/helix/phases/03-test/artifacts/`, with
+phase-local helper prompts under `workflows/helix/phases/03-test/actions/`.
+Open the relevant prompt, use the adjacent template, and keep outputs in
+`docs/helix/03-test/` plus executable files under `tests/`.
 
-```bash
-# Generate test plan from specifications
-ddx apply prompts/helix/test/test-plan
+Common entry points:
+- `artifacts/test-plan/`
+- `artifacts/story-test-plan/`
+- `artifacts/test-suites/`
+- `artifacts/security-tests/`
 
-# Create contract tests from API design
-ddx apply prompts/helix/test/contract-tests
-
-# Generate acceptance tests from user stories
-ddx apply prompts/helix/test/acceptance-tests
-
-# Write comprehensive unit tests
-ddx apply actions/helix/test/unit-tests
-```
-
-AI excels at generating comprehensive test suites from specifications, but human review ensures tests truly validate business requirements.
+AI is useful for expanding coverage from requirements and designs. Human review
+must confirm the tests reflect business intent and preserve the Red-first TDD
+constraint.
 
 ## File Organization
 
