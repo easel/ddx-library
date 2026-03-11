@@ -7,14 +7,22 @@ Use this section order:
 3. Intent Summary
 4. Planning Stack Findings
 5. Implementation Map
-6. Gap Register
-7. Traceability Matrix
-8. Review Bead Summary
-9. Execution Beads Generated
-10. Execution Order
-11. Open Decisions
+6. Acceptance Criteria Status
+7. Gap Register (with Quality Findings)
+8. Traceability Matrix
+9. Review Bead Summary
+10. Execution Beads Generated
+11. Bead Coverage Verification
+12. Execution Order
+13. Open Decisions
 
 ## Required Tables
+
+### Acceptance Criteria Status
+
+| Story / Feature | Criterion | Test Reference | Status | Evidence |
+|-----------------|-----------|----------------|--------|----------|
+| [US-XXX] | [criterion] | [test path or "none"] | [SATISFIED/TESTED_NOT_PASSING/UNTESTED/UNIMPLEMENTED] | [refs] |
 
 ### Gap Register
 
@@ -35,3 +43,9 @@ Use this section order:
 
 | Bead ID | Type | HELIX Labels | Parent / Source | Goal | Dependencies | Verification |
 |---------|------|--------------|-----------------|------|--------------|-------------|
+
+### Bead Coverage Verification
+
+| Gap / Criterion | Covering Bead | Status |
+|-----------------|---------------|--------|
+| [gap or criterion] | [bd ID or "MISSING"] | [covered/missing/deferred] |

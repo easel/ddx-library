@@ -142,6 +142,23 @@ Identify:
 - major unplanned code paths
 - dead or orphaned implementations
 
+### Acceptance Criteria Validation
+
+For each user story and feature spec in the reviewed scope:
+
+1. Extract acceptance criteria from the governing artifact.
+2. For each criterion, determine whether:
+   - a test exists that exercises the criterion
+   - the test passes
+   - the implementation satisfies the criterion based on code inspection
+3. Classify each criterion as:
+   - **SATISFIED** — test exists, passes, and implementation matches
+   - **TESTED_NOT_PASSING** — test exists but fails
+   - **UNTESTED** — no test covers this criterion
+   - **UNIMPLEMENTED** — no implementation addresses this criterion
+4. Record results in the Gap Register with the governing artifact as planning
+   evidence and the test or code file as implementation evidence.
+
 ## PHASE 4 - Gap Classification
 
 For each relevant area, assign exactly one classification:
@@ -160,6 +177,25 @@ Each classification must include:
 - explanation
 - default resolution direction: `code-to-plan`, `plan-to-code`, or `decision-needed`
 - owning review bead ID
+
+### Quality Evaluation
+
+For each area classified as ALIGNED or INCOMPLETE, evaluate:
+
+- **Robustness** — does the implementation handle edge cases, errors, and
+  degraded inputs as specified? Are failure modes defined in the design and
+  tested?
+- **Maintainability** — is the implementation structured for change? Are
+  boundaries clean, dependencies explicit, and coupling proportional to
+  cohesion?
+- **Performance** — are performance constraints from requirements or design
+  met or testable? Are there obvious scalability risks unaddressed by the
+  planning stack?
+
+Quality concerns do not change the gap classification. Instead, record them as
+supplementary findings in the Gap Register with resolution direction
+`quality-improvement` and create backlog-type execution beads in Phase 7 when
+warranted.
 
 ## PHASE 5 - Traceability Matrix
 
@@ -204,6 +240,21 @@ Execution bead rules:
 - if canonical docs must change before implementation, create the doc/design bead before the code bead
 - do not create duplicate beads for the same gap
 
+### Bead Coverage Verification
+
+After creating execution beads, verify completeness:
+
+1. For every gap in the Gap Register that is not ALIGNED, confirm at least one
+   execution bead exists that addresses it.
+2. For every acceptance criterion classified as UNTESTED or UNIMPLEMENTED,
+   confirm at least one execution bead exists that would resolve it.
+3. For every quality concern recorded, confirm either an execution bead exists
+   or the concern is explicitly deferred with rationale.
+
+If coverage gaps remain, create the missing execution beads before proceeding.
+The bead set must fully represent the work required to move from current state
+to the end state defined by the planning stack.
+
 ## PHASE 8 - Execution Order
 
 Output:
@@ -234,12 +285,14 @@ Produce these sections in order:
 3. Intent Summary
 4. Planning Stack Findings
 5. Implementation Map
-6. Gap Register
-7. Traceability Matrix
-8. Review Bead Summary
-9. Execution Beads Generated
-10. Execution Order
-11. Open Decisions
-12. Queue Health and Exhaustion Assessment
+6. Acceptance Criteria Status
+7. Gap Register (with Quality Findings)
+8. Traceability Matrix
+9. Review Bead Summary
+10. Execution Beads Generated
+11. Bead Coverage Verification
+12. Execution Order
+13. Open Decisions
+14. Queue Health and Exhaustion Assessment
 
 Be precise, deterministic, and evidence-driven.

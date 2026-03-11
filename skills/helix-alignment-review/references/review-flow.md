@@ -74,6 +74,14 @@ Map implementation to the planning stack:
 - feature flags / config switches
 - unplanned or orphaned code paths
 
+#### Acceptance Criteria Validation
+
+For each user story and feature spec in scope:
+
+- extract acceptance criteria from the governing artifact
+- classify each as SATISFIED, TESTED_NOT_PASSING, UNTESTED, or UNIMPLEMENTED
+- record in the Gap Register with evidence
+
 ### 5. Classify Gaps
 
 Use exactly one:
@@ -90,8 +98,14 @@ For each gap include:
 - planning evidence
 - implementation evidence
 - explanation
-- resolution direction: `code-to-plan`, `plan-to-code`, or `decision-needed`
+- resolution direction: `code-to-plan`, `plan-to-code`, `decision-needed`, or `quality-improvement`
 - owning review bead
+
+#### Quality Evaluation
+
+For ALIGNED or INCOMPLETE areas, evaluate robustness, maintainability, and
+performance against the planning stack. Record quality concerns as supplementary
+Gap Register entries with direction `quality-improvement`.
 
 ### 6. Consolidate
 
@@ -107,6 +121,13 @@ Only after consolidation:
 - set the closest governing artifact in `spec-id`
 - add blockers with `bd dep add`
 - create doc/design beads before code beads when upstream artifacts must change first
+
+#### Bead Coverage Verification
+
+After creating execution beads, verify every non-ALIGNED gap and every
+UNTESTED/UNIMPLEMENTED acceptance criterion has at least one covering bead.
+Create missing beads before proceeding. The bead set must fully represent the
+work to reach the end state defined by the planning stack.
 
 ### 8. Output Execution Order
 

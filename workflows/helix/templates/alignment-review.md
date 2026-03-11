@@ -82,11 +82,23 @@
 
 - [Code path or implementation area]
 
+## Acceptance Criteria Status
+
+| Story / Feature | Criterion | Test Reference | Status | Evidence |
+|-----------------|-----------|----------------|--------|----------|
+| [US-XXX or FEAT-XXX] | [criterion text] | [test path or "none"] | [SATISFIED/TESTED_NOT_PASSING/UNTESTED/UNIMPLEMENTED] | [path refs] |
+
 ## Gap Register
 
 | Area | Classification | Planning Evidence | Implementation Evidence | Resolution Direction | Review Bead | Notes |
 |------|----------------|-------------------|--------------------------|----------------------|-------------|-------|
-| [Area] | [ALIGNED/INCOMPLETE/DIVERGENT/UNDERSPECIFIED/STALE_PLAN/BLOCKED] | [path refs] | [path refs] | [code-to-plan/plan-to-code/decision-needed] | [bd ID] | [short note] |
+| [Area] | [ALIGNED/INCOMPLETE/DIVERGENT/UNDERSPECIFIED/STALE_PLAN/BLOCKED] | [path refs] | [path refs] | [code-to-plan/plan-to-code/decision-needed/quality-improvement] | [bd ID] | [short note] |
+
+### Quality Findings
+
+| Area | Dimension | Concern | Severity | Resolution | Bead |
+|------|-----------|---------|----------|------------|------|
+| [Area] | [robustness/maintainability/performance] | [description] | [low/medium/high] | [quality-improvement or deferred with rationale] | [bd ID or "deferred"] |
 
 ## Traceability Matrix
 
@@ -105,6 +117,12 @@
 | Bead ID | Type | HELIX Labels | Parent / Source | Goal | Dependencies | Verification |
 |---------|------|--------------|-----------------|------|--------------|-------------|
 | [bd ID] | [task/chore/decision] | [phase:... kind:...] | [review bead or epic] | [goal] | [deps] | [acceptance or checks] |
+
+## Bead Coverage Verification
+
+| Gap / Criterion | Covering Bead | Status |
+|-----------------|---------------|--------|
+| [gap or acceptance criterion] | [bd ID or "MISSING"] | [covered/missing/deferred] |
 
 ## Execution Order
 
