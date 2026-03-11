@@ -54,5 +54,6 @@ task lists or custom HELIX bead files.
 
 - Non-actionable observations stay in reports, analyses, or retrospectives.
 - Actionable work items must exist as beads before being scheduled.
-- Use `bd list --label helix --label phase:iterate --label kind:backlog` to
-  review the current backlog set.
+- Use `bd ready` to review actionable iterate work. Keep backlog beads labeled
+  with `helix`, `phase:iterate`, and `kind:backlog` so they are easy to triage
+  when they become ready.

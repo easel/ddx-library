@@ -31,13 +31,13 @@ artifact_patterns:
       pattern: ".beads/"
       type: build-bead
       phase: build
-      query_command: "bd list --label helix --label phase:build --label story:US-{id}"
+      query_command: "Inspect open bd issues labeled helix, phase:build, story:US-{id}"
 
     deploy:
       pattern: ".beads/"
       type: deploy-bead
       phase: deploy
-      query_command: "bd list --label helix --label phase:deploy --label story:US-{id}"
+      query_command: "Inspect open bd issues labeled helix, phase:deploy, story:US-{id}"
 
     iterate:
       pattern: "docs/helix/06-iterate/iteration-reports/IR-{id}-*.md"

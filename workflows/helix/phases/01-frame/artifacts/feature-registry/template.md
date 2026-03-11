@@ -88,8 +88,8 @@ Track high-level metrics:
 For each feature, artifacts are located at:
 - **Specification**: `docs/helix/01-frame/features/FEAT-XXX-[name].md`
 - **User Stories**: `docs/helix/01-frame/user-stories/US-XXX-[name].md`
-- **Solution Design**: `docs/design/solution-designs/SD-XXX-[name].md`
-- **Contracts**: `docs/design/contracts/API-XXX-[name].md`
+- **Solution Design**: `docs/helix/02-design/solution-designs/SD-XXX-[name].md`
+- **Contracts**: `docs/helix/02-design/contracts/API-XXX-[name].md`
 - **Tests**: `tests/FEAT-XXX-[name]/`
 - **Implementation**: `src/features/FEAT-XXX-[name]/`
 

@@ -225,8 +225,8 @@ The workflow state is determined by which artifacts exist:
 If exists US-036: Story is in FRAME
 If exists TD-036: Story is in DESIGN
 If exists TP-036: Story is in TEST
-If `bd list --label helix --label phase:build --label story:US-036` returns open work: Story is in BUILD
-If `bd list --label helix --label phase:deploy --label story:US-036` returns open work: Story is in DEPLOY
+If open HELIX build beads exist for story US-036: Story is in BUILD
+If open HELIX deploy beads exist for story US-036: Story is in DEPLOY
 If exists IR-036: Story is in ITERATE
 ```
 

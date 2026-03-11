@@ -15,7 +15,7 @@ inputs:
       same_number: true
       relationship: "follows technical design"
   optional:
-    - artifact: test-suite
+    - artifact: test-suites
       phase: "03-test"
       relationship: "failing tests to make pass"
 

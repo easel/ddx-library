@@ -23,6 +23,8 @@ See `workflows/helix/BEADS.md`.
 - rollback triggers and verification in `acceptance`
 - blockers in dependency links rather than a custom blocked field
 
-## Example Query
+## Queue Check
 
-`bd list --label helix --label phase:deploy --label story:US-{story-id}`
+Use `bd ready` to pick the next executable deploy bead. Confirm the bead carries
+the labels `helix`, `phase:deploy`, and `story:US-{story-id}`, then inspect it
+with `bd show <id>` before executing rollout work.

@@ -23,9 +23,11 @@ See `workflows/helix/BEADS.md`.
 - verification contract in `acceptance`
 - blockers in dependency links rather than a custom blocked field
 
-## Example Query
+## Queue Check
 
-`bd list --label helix --label phase:build --label story:US-{story-id}`
+Use `bd ready` to pick the next executable build bead. Confirm the bead carries
+the labels `helix`, `phase:build`, and `story:US-{story-id}`, then inspect it
+with `bd show <id>` before implementing.
 
 ## Sizing Rule
 
