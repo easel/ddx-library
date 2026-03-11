@@ -60,11 +60,22 @@ need_cmd() {
   fi
 }
 
-ensure_beads_initialized() {
+require_live_beads() {
   need_cmd bd
+
   if [[ ! -d "$target_root/.beads" ]]; then
-    printf 'helix: initializing Beads in %s\n' "$target_root" >&2
-    (cd "$target_root" && bd init >/dev/null)
+    printf 'helix: Beads is not initialized in %s\n' "$target_root" >&2
+    printf 'helix: run `cd %s && bd init` manually, then retry\n' "$target_root" >&2
+    printf 'helix: refusing to auto-initialize or inspect backup/exported tracker data\n' >&2
+    exit 1
+  fi
+
+  local status_error
+  if ! status_error="$(cd "$target_root" && bd status --json 2>&1 >/dev/null)"; then
+    printf 'helix: failed to access live Beads tracker in %s\n' "$target_root" >&2
+    printf 'helix: bd status --json failed: %s\n' "$status_error" >&2
+    printf 'helix: refusing to auto-initialize or inspect backup/exported tracker data\n' >&2
+    exit 1
   fi
 }
 
@@ -148,7 +159,6 @@ EOF
 
 helix_ready_count() {
   need_cmd jq
-  ensure_beads_initialized
 
   bd ready \
     --label helix \
@@ -200,16 +210,25 @@ parse_common_flags() {
 
 run_implementation() {
   local selector="${1:-}"
+  if (( ! dry_run )); then
+    require_live_beads
+  fi
   run_agent_prompt "$(implementation_prompt "$selector")"
 }
 
 run_check() {
   local scope="${1:-repo}"
+  if (( ! dry_run )); then
+    require_live_beads
+  fi
   run_agent_prompt "$(check_prompt "$scope")"
 }
 
 run_alignment() {
   local scope="${1:-repo}"
+  if (( ! dry_run )); then
+    require_live_beads
+  fi
   run_agent_prompt "$(alignment_prompt "$scope")"
 }
 
@@ -221,8 +240,7 @@ run_backfill() {
     return 0
   fi
 
-  need_cmd bd
-  ensure_beads_initialized
+  require_live_beads
 
   local output
   output="$(run_agent_prompt "$(backfill_prompt "$scope")")"
@@ -272,9 +290,8 @@ run_loop() {
   local cycles=0
   local post_drain_alignment_ran=0
 
-  need_cmd bd
   need_cmd jq
-  ensure_beads_initialized
+  require_live_beads
 
   while true; do
     local ready_count

@@ -39,6 +39,10 @@ bd human
 This creates the upstream `.beads/` workspace managed by `bd` and Dolt. HELIX
 canonical planning artifacts still live under `docs/helix/`.
 
+HELIX execution assumes a working repo-local Beads workspace already exists.
+If live `bd` access is missing or unhealthy, stop immediately. Do not run
+`bd init` or inspect alternate tracker sources from execution flows.
+
 ## HELIX Mapping
 
 Use upstream Beads fields directly:
@@ -54,6 +58,21 @@ Use upstream Beads fields directly:
 
 Blocked work should be modeled with dependencies and surfaced through
 `bd blocked` / `bd ready`, not with a custom HELIX status taxonomy.
+
+## Verification Evidence Conventions
+
+If a repository defines canonical verification wrappers or proof lanes, treat
+them as the closure surface for the corresponding bead.
+
+- Close execution beads from the repo-owned wrapper command and its retained
+  artifacts, not from narrower package or file commands that were only used to
+  debug the failure.
+- When the canonical lane contradicts historical close evidence, do not leave
+  the bead closed just because upstream Beads has no native `failed` status.
+  Reopen the bead immediately or create an explicit regression bead linked to
+  the contradicted close evidence.
+- Record the exact command, run date, exit status, and artifact paths reviewed
+  in the bead close comment or regression note.
 
 ## HELIX Label Conventions
 

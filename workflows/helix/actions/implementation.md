@@ -84,7 +84,8 @@ scope, or missing verification must be refined before implementation.
 ## PHASE 0 - Bootstrap
 
 1. Verify upstream Beads is available.
-   - If `.beads/` is missing, initialize with `bd init`.
+   - If live `bd` access is missing or unhealthy, stop immediately.
+   - Do not run `bd init` or inspect alternate tracker sources from this action.
 2. Inspect the current git worktree.
    - Do not revert unrelated changes.
    - If unrelated changes create commit risk, isolate your bead changes rather
@@ -233,12 +234,22 @@ At minimum, verify:
 - docs/config/runbooks are updated where required
 - any build, deploy, or iterate phase exit conditions touched by the work are still valid
 
+If the repository defines canonical verification wrappers or proof lanes, use
+those wrappers for closure evidence. Narrower package or file commands are for
+debugging after the canonical lane fails; they do not replace the maintained
+closure surface.
+
 If verification fails:
 
 - fix the issue within the bead scope, or
 - leave the bead open with a precise status note and follow-on beads if needed
 
 Do not commit broken work as a completed bead.
+
+If a canonical verification run contradicts a previously closed bead, do not
+leave that bead green. Reopen it immediately or create a linked regression bead
+that records the exact contradictory command, date, exit status, and reviewed
+artifacts.
 
 ## PHASE 8 - Commit And Close
 

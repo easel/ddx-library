@@ -95,10 +95,8 @@ Do not create custom HELIX bead files.
 
 Use live tracker commands such as `bd ready`, `bd show`, `bd query`, and
 `bd list` as needed for queue state. Do not treat `.beads/backup/`,
-checked-in planning snapshots, or exported JSON as the primary tracker source
-when live `bd` is functioning. Those files are fallback evidence only when a
-live `bd` command actually fails, and must be labeled as secondary evidence in
-the report.
+checked-in planning snapshots, exported JSON, or direct Dolt state as tracker
+fallbacks. If live `bd` access is missing or unhealthy, stop immediately.
 
 ### Research Structure
 
@@ -173,7 +171,8 @@ evidence extraction pass are complete for the relevant scope.
 
 1. Determine the backfill scope.
 2. Verify upstream Beads is available.
-   - If `.beads/` is missing, initialize with `bd init`.
+   - If live `bd` access is missing or unhealthy, stop immediately.
+   - Do not run `bd init` or inspect alternate tracker sources from this action.
    - Use live `bd` output as the authoritative queue source for the run.
 3. Inventory existing documentation:
    - `docs/helix/`

@@ -70,7 +70,8 @@ Rules:
 ## PHASE 0 - Bootstrap
 
 1. Verify upstream Beads is available.
-   - If `.beads/` is missing, note that execution tracking is not initialized.
+   - If live `bd` access is missing or unhealthy, stop immediately.
+   - Do not run `bd init` or infer queue state from alternate tracker sources.
 2. Determine the scope.
 3. Detect whether canonical HELIX docs exist for the scope.
    - check `docs/helix/`

@@ -80,6 +80,15 @@ case "$command" in
   init)
     mkdir -p .beads
     ;;
+  status)
+    if [[ "${MOCK_BD_STATUS:-ok}" == "fail" ]]; then
+      echo "mock bd status failure" >&2
+      exit 1
+    fi
+    cat <<'JSON'
+{"summary":{"total_issues":0,"ready_issues":0}}
+JSON
+    ;;
   ready)
     count="$(pop_first_line "$state_root/ready-seq" || echo 0)"
     emit_ready_json "$count"
@@ -194,6 +203,7 @@ make_workspace() {
   (
     cd "$root/work"
     git init -q
+    mkdir -p .beads
   )
   echo "$root"
 }
@@ -239,6 +249,38 @@ test_backfill_dry_run() {
   assert_contains "$output" "actions/backfill-helix-docs.md" "backfill dry-run should reference backfill action"
   assert_contains "$output" "This is a writable live session" "backfill dry-run should assert writable live execution"
   assert_contains "$output" "BACKFILL_STATUS" "backfill dry-run should require machine-readable trailer"
+  rm -rf "$root"
+}
+
+test_run_fails_without_beads_workspace() {
+  local root
+  root="$(make_workspace)"
+  rm -rf "$root/work/.beads"
+
+  local output
+  if output="$(run_helix "$root" run 2>&1)"; then
+    fail "run should fail when Beads is not initialized"
+  fi
+
+  assert_contains "$output" "Beads is not initialized" "run should report missing Beads workspace"
+  assert_contains "$output" "bd init" "run should tell the operator to initialize Beads manually"
+  [[ ! -f "$root/state/calls.log" ]] || fail "run should not invoke the agent when Beads is missing"
+  rm -rf "$root"
+}
+
+test_implement_fails_when_beads_is_unhealthy() {
+  local root
+  root="$(make_workspace)"
+
+  local output
+  if output="$(MOCK_BD_STATUS=fail run_helix "$root" implement repo 2>&1)"; then
+    fail "implement should fail when live Beads access is broken"
+  fi
+
+  assert_contains "$output" "failed to access live Beads tracker" "implement should report live Beads failure"
+  assert_contains "$output" "mock bd status failure" "implement should surface the bd status error"
+  assert_contains "$output" "refusing to auto-initialize or inspect backup/exported tracker data" "implement should refuse fallback behavior"
+  [[ ! -f "$root/state/calls.log" ]] || fail "implement should not invoke the agent when Beads is unhealthy"
   rm -rf "$root"
 }
 
@@ -339,6 +381,8 @@ run_test() {
 run_test "help" test_help
 run_test "check dry-run" test_check_dry_run
 run_test "backfill dry-run" test_backfill_dry_run
+run_test "run requires beads workspace" test_run_fails_without_beads_workspace
+run_test "implement fails on unhealthy beads" test_implement_fails_when_beads_is_unhealthy
 run_test "run stops after drain" test_run_stops_after_queue_drains
 run_test "periodic alignment" test_run_periodic_alignment
 run_test "auto-align" test_run_auto_aligns_once

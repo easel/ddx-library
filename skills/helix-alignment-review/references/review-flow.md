@@ -23,7 +23,7 @@ Rules:
 ### 1. Bootstrap
 
 - verify `bd` is available
-- initialize `.beads/` with `bd init` if needed
+- if live `bd` access is missing or unhealthy, stop immediately
 - create or reconcile one review epic:
   - `type: epic`
   - labels: `helix`, `phase:review`, `kind:review`
