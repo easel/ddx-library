@@ -39,6 +39,21 @@ project-root/
 3. **Tool Support**: Consistent structure enables validation and automation
 4. **Flexibility**: Non-phase documentation has dedicated locations
 
+### Repository Adaptations
+
+The documented `docs/helix/` paths are the default HELIX layout, not permission
+to redefine phase semantics. Repositories may relocate some machine-gated
+artifacts when local tooling requires it, but they must document that mapping
+in their local HELIX index or phase READMEs and preserve the phase boundary:
+
+- `03-test` is still the Test phase and TDD Red phase
+- `04-build` is still the Build phase where code is written and refined
+- local storage conventions must not erase the rule that Build begins only
+  after failing tests define the expected behavior
+
+If a repository cannot explain its local adaptation without changing those three
+statements, the adaptation is incorrect.
+
 ### Phase Directory Contents
 
 Each phase directory contains artifacts directly (no `artifacts/` subdirectory):

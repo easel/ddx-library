@@ -52,6 +52,21 @@ Each phase (except Frame) has input gates that validate the previous phase's out
 
 This test-first approach ensures specifications drive implementation and quality is built in from the start.
 
+## Repository Adaptations
+
+HELIX defines phase semantics first and directory conventions second.
+The canonical phase boundary is:
+
+- `03-test`: the pre-build Test phase and TDD Red phase
+- `04-build`: the Build phase where code is written to satisfy those tests
+
+Projects may adapt the on-disk placement of some machine-gated artifacts for
+tooling or repository-history reasons, but those storage choices do not rename
+the phases or weaken the Test-to-Build gate. If a project stores some
+test-driving artifacts outside `03-test`, it must document that mapping in its
+local HELIX index and preserve the rule that Build starts only after failing
+tests define the behavior to implement.
+
 ## Human-AI Collaboration
 
 Throughout the workflow, responsibilities are shared:

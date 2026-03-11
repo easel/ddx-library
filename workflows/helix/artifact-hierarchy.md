@@ -134,6 +134,23 @@ docs/
             └── IR-XXX-*.md           # Story-level (NEW)
 ```
 
+## Repository Adaptations
+
+The directory structure above is the canonical HELIX default. Some repositories
+may keep a subset of machine-gated artifacts in a different location for local
+tooling or historical reasons. That kind of storage adaptation is allowed only
+when the repository documents the mapping explicitly and keeps the phase meaning
+intact:
+
+- `03-test` remains the Test phase and TDD Red phase
+- `04-build` remains the Build phase and Green/refactor phase
+- moving files does not permit Build work to bypass failing-test preconditions
+
+If a repository deviates from the default paths, readers should still be able
+to answer two questions immediately: which artifacts define behavior before
+implementation, and which artifacts record implementation/build work after that
+gate is satisfied.
+
 ## Cross-References
 
 Each artifact references its dependencies:
