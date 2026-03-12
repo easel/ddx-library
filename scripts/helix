@@ -22,6 +22,11 @@ review_every=0
 max_cycles=0
 auto_align=1
 dry_run=0
+beads_sandbox=0
+
+if [[ "${BEADS_DOLT_SERVER_MODE:-1}" == "0" ]]; then
+  beads_sandbox=1
+fi
 
 usage() {
   cat <<EOF
@@ -49,7 +54,12 @@ Options:
 
 Environment:
   HELIX_AGENT         Default agent (codex or claude)
+  BEADS_DOLT_SERVER_MODE
+                      Set to 0 to force Beads sandbox/direct mode in the wrapper and spawned agent sessions
   HELIX_LIBRARY_ROOT  Override the library root that contains workflows/helix/
+
+Notes:
+  Codex sandbox and approval behavior come from your Codex config/profile.
 EOF
 }
 
@@ -57,6 +67,30 @@ need_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
     echo "missing required command: $1" >&2
     exit 1
+  fi
+}
+
+run_with_beads_env() {
+  if (( beads_sandbox )); then
+    BEADS_DOLT_SERVER_MODE=0 "$@"
+  else
+    "$@"
+  fi
+}
+
+bd_cmd() {
+  if (( beads_sandbox )); then
+    run_with_beads_env bd --sandbox "$@"
+  else
+    bd "$@"
+  fi
+}
+
+beads_prompt_note() {
+  if (( beads_sandbox )); then
+    cat <<'EOF'
+This session must use Beads direct mode. Keep `BEADS_DOLT_SERVER_MODE=0` in effect for Beads commands; if that is lost, use `bd --sandbox ...` explicitly. Do not rely on localhost Dolt server access.
+EOF
   fi
 }
 
@@ -71,7 +105,7 @@ require_live_beads() {
   fi
 
   local status_error
-  if ! status_error="$(cd "$target_root" && bd status --json 2>&1 >/dev/null)"; then
+  if ! status_error="$(cd "$target_root" && bd_cmd status --json 2>&1 >/dev/null)"; then
     printf 'helix: failed to access live Beads tracker in %s\n' "$target_root" >&2
     printf 'helix: bd status --json failed: %s\n' "$status_error" >&2
     printf 'helix: refusing to auto-initialize or inspect backup/exported tracker data\n' >&2
@@ -86,17 +120,25 @@ run_agent_prompt() {
     codex)
       need_cmd codex
       if (( dry_run )); then
-        printf 'codex -a never -s danger-full-access exec -C %q --ephemeral %q\n' "$target_root" "$prompt"
+        if (( beads_sandbox )); then
+          printf 'env BEADS_DOLT_SERVER_MODE=0 codex exec -C %q --ephemeral %q\n' "$target_root" "$prompt"
+        else
+          printf 'codex exec -C %q --ephemeral %q\n' "$target_root" "$prompt"
+        fi
       else
-        codex -a never -s danger-full-access exec -C "$target_root" --ephemeral "$prompt"
+        run_with_beads_env codex exec -C "$target_root" --ephemeral "$prompt"
       fi
       ;;
     claude)
       need_cmd claude
       if (( dry_run )); then
-        printf 'claude -p --permission-mode bypassPermissions --dangerously-skip-permissions --no-session-persistence %q\n' "$prompt"
+        if (( beads_sandbox )); then
+          printf 'env BEADS_DOLT_SERVER_MODE=0 claude -p --permission-mode bypassPermissions --dangerously-skip-permissions --no-session-persistence %q\n' "$prompt"
+        else
+          printf 'claude -p --permission-mode bypassPermissions --dangerously-skip-permissions --no-session-persistence %q\n' "$prompt"
+        fi
       else
-        claude -p \
+        run_with_beads_env claude -p \
           --permission-mode bypassPermissions \
           --dangerously-skip-permissions \
           --no-session-persistence \
@@ -112,10 +154,13 @@ run_agent_prompt() {
 
 implementation_prompt() {
   local selector="${1:-}"
+  local sandbox_note
+  sandbox_note="$(beads_prompt_note)"
   cat <<EOF
 Use the HELIX implementation action at ${helix_docs_root}/actions/implementation.md.
 Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/phases/04-build/enforcer.md as needed.
 Execute in the current repository rooted at ${target_root}.
+${sandbox_note}
 ${selector:+Implementation target: ${selector}.}
 Follow the action exactly.
 EOF
@@ -123,10 +168,13 @@ EOF
 
 check_prompt() {
   local scope="${1:-repo}"
+  local sandbox_note
+  sandbox_note="$(beads_prompt_note)"
   cat <<EOF
 Use the HELIX check action at ${helix_docs_root}/actions/check.md.
 Use supporting references at ${helix_docs_root}/BEADS.md and ${helix_docs_root}/README.md as needed.
 Execute in the current repository rooted at ${target_root}.
+${sandbox_note}
 Review scope: ${scope}.
 Return the required NEXT_ACTION line and the exact next command.
 Follow the action exactly.
@@ -135,10 +183,13 @@ EOF
 
 alignment_prompt() {
   local scope="${1:-repo}"
+  local sandbox_note
+  sandbox_note="$(beads_prompt_note)"
   cat <<EOF
 Use the HELIX alignment action at ${helix_docs_root}/actions/reconcile-alignment.md.
 Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/templates/alignment-review.md as needed.
 Execute in the current repository rooted at ${target_root}.
+${sandbox_note}
 Review scope: ${scope}.
 Follow the action exactly.
 EOF
@@ -146,10 +197,13 @@ EOF
 
 backfill_prompt() {
   local scope="${1:-repo}"
+  local sandbox_note
+  sandbox_note="$(beads_prompt_note)"
   cat <<EOF
 Use the HELIX backfill action at ${helix_docs_root}/actions/backfill-helix-docs.md.
 Use supporting references at ${helix_docs_root}/BEADS.md, ${helix_docs_root}/README.md, and ${helix_docs_root}/templates/backfill-report.md as needed.
 Execute in the current repository rooted at ${target_root}.
+${sandbox_note}
 This is a writable live session: run real bd commands, update docs/helix/, and do not claim that you need another session unless a concrete command actually fails.
 Backfill scope: ${scope}.
 Return the required BACKFILL_STATUS, BACKFILL_REPORT, and RESEARCH_EPIC trailer lines exactly.
@@ -160,7 +214,7 @@ EOF
 helix_ready_count() {
   need_cmd jq
 
-  bd ready \
+  bd_cmd ready \
     --label helix \
     --label-any phase:build \
     --label-any phase:deploy \

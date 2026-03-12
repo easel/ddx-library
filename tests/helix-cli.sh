@@ -52,6 +52,18 @@ make_mock_bin() {
 set -euo pipefail
 
 state_root="${MOCK_STATE_ROOT:?}"
+sandbox=0
+
+while [[ "${1:-}" == "--sandbox" ]]; do
+  sandbox=1
+  shift
+done
+
+if [[ "${MOCK_REQUIRE_SANDBOX:-0}" == "1" && "$sandbox" -ne 1 ]]; then
+  echo "mock bd expected --sandbox" >&2
+  exit 1
+fi
+
 command="${1:-}"
 shift || true
 
@@ -105,6 +117,12 @@ EOF
 set -euo pipefail
 
 state_root="${MOCK_STATE_ROOT:?}"
+
+if [[ "${MOCK_EXPECT_BEADS_DIRECT:-0}" == "1" && "${BEADS_DOLT_SERVER_MODE:-}" != "0" ]]; then
+  echo "mock codex expected BEADS_DOLT_SERVER_MODE=0" >&2
+  exit 1
+fi
+
 payload="$*"
 mode="${MOCK_BACKFILL_MODE:-complete}"
 
@@ -236,8 +254,18 @@ test_check_dry_run() {
   root="$(make_workspace)"
   local output
   output="$(run_helix "$root" check --dry-run repo)"
-  assert_contains "$output" "codex -a never -s danger-full-access exec" "dry-run should print codex command"
+  assert_contains "$output" "codex exec -C" "dry-run should print codex command"
   assert_contains "$output" "actions/check.md" "dry-run should reference check action"
+  rm -rf "$root"
+}
+
+test_check_dry_run_uses_beads_direct_mode() {
+  local root
+  root="$(make_workspace)"
+  local output
+  output="$(BEADS_DOLT_SERVER_MODE=0 run_helix "$root" check --dry-run repo)"
+  assert_contains "$output" "env BEADS_DOLT_SERVER_MODE=0 codex exec -C" "dry-run should propagate Beads direct mode to Codex"
+  assert_contains "$output" "This session must use Beads direct mode." "dry-run should tell the agent to stay off localhost Dolt server access"
   rm -rf "$root"
 }
 
@@ -326,6 +354,23 @@ test_run_auto_aligns_once() {
   rm -rf "$root"
 }
 
+test_run_uses_beads_direct_mode_for_wrapper_and_agent() {
+  local root
+  root="$(make_workspace)"
+  printf '0\n' > "$root/state/ready-seq"
+  printf 'STOP\n' > "$root/state/next-actions"
+
+  BEADS_DOLT_SERVER_MODE=0 \
+  MOCK_REQUIRE_SANDBOX=1 \
+  MOCK_EXPECT_BEADS_DIRECT=1 \
+    run_helix "$root" run >/dev/null
+
+  local calls
+  calls="$(cat "$root/state/calls.log")"
+  assert_eq $'check' "$calls" "run should keep Beads direct mode on for wrapper bd calls and the spawned agent"
+  rm -rf "$root"
+}
+
 run_backfill_missing_report() {
   local root="$1"
   MOCK_BACKFILL_MODE=missing-report run_helix "$root" backfill repo >/dev/null
@@ -380,12 +425,14 @@ run_test() {
 
 run_test "help" test_help
 run_test "check dry-run" test_check_dry_run
+run_test "check dry-run beads direct mode" test_check_dry_run_uses_beads_direct_mode
 run_test "backfill dry-run" test_backfill_dry_run
 run_test "run requires beads workspace" test_run_fails_without_beads_workspace
 run_test "implement fails on unhealthy beads" test_implement_fails_when_beads_is_unhealthy
 run_test "run stops after drain" test_run_stops_after_queue_drains
 run_test "periodic alignment" test_run_periodic_alignment
 run_test "auto-align" test_run_auto_aligns_once
+run_test "run beads direct mode" test_run_uses_beads_direct_mode_for_wrapper_and_agent
 run_test "backfill requires report marker" test_backfill_requires_report_marker
 run_test "backfill creates report" test_backfill_creates_report
 run_test "installer launcher" test_installer_creates_launcher
