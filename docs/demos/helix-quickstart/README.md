@@ -15,7 +15,7 @@ tiny Node.js temperature converter CLI.
 ## Prerequisites
 
 - Docker
-- Claude OAuth credentials at `~/.claude/`
+- Claude OAuth credentials at `~/.claude.json` and `~/.claude/`
 
 ## Build
 
@@ -30,6 +30,7 @@ Record an asciinema session:
 
 ```bash
 docker run --rm \
+  -v ~/.claude.json:/root/.claude.json:ro \
   -v ~/.claude:/root/.claude:ro \
   -v "$(git rev-parse --show-toplevel)":/ddx-library:ro \
   -v "$(pwd)/recordings":/recordings \
@@ -42,6 +43,7 @@ Run without recording (interactive):
 
 ```bash
 docker run --rm -it \
+  -v ~/.claude.json:/root/.claude.json:ro \
   -v ~/.claude:/root/.claude:ro \
   -v "$(git rev-parse --show-toplevel)":/ddx-library:ro \
   helix-demo
@@ -61,8 +63,9 @@ asciinema upload recordings/helix-quickstart-*.cast
 
 ## Troubleshooting
 
-**Claude authentication fails**: Ensure `~/.claude/` contains valid OAuth
-credentials. The directory is bind-mounted read-only into the container.
+**Claude authentication fails**: Ensure both `~/.claude.json` and `~/.claude/`
+exist and contain valid OAuth credentials. Both are bind-mounted read-only
+into the container. Run `claude` locally first to authenticate if needed.
 
 **br not found**: The install script downloads a pre-built binary. If it fails
 in your environment, install manually with `cargo install --git https://github.com/Dicklesworthstone/beads_rust.git`.

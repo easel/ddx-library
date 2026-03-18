@@ -228,7 +228,7 @@ The core workflow commands map directly:
 |---|---|---|
 | Initialize | `bd init` | `br init` |
 | Find ready work | `bd ready --json` | `br ready --json` |
-| Create issue | `bd create "title" --labels helix,phase:build` | `br create "title"` then `br label add <id> helix phase:build` |
+| Create issue | `bd create "title" --labels helix,phase:build` | `br create "title"` then `br label add -l helix <id>` (one label per call) |
 | Claim work | `bd update <id> --claim` | `br update <id> --status in_progress` |
 | Show issue | `bd show <id>` | `br show <id>` |
 | Close issue | `bd close <id>` | `br close <id>` |

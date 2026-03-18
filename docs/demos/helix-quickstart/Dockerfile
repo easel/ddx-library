@@ -1,23 +1,24 @@
-FROM node:22-bookworm-slim
+FROM ubuntu:24.04
 
-# System dependencies
+# System dependencies + Node.js
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
     jq \
+    python3 \
+    pipx \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Install asciinema
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip pipx \
-    && rm -rf /var/lib/apt/lists/* \
-    && pipx install asciinema
-
+RUN pipx install asciinema
 ENV PATH="/root/.local/bin:$PATH"
 
 # Install br (beads_rust) — lightweight SQLite-based issue tracker
 RUN curl -fsSL https://raw.githubusercontent.com/Dicklesworthstone/beads_rust/main/install.sh | bash
+ENV PATH="/root/.local/bin:$PATH"
 
 # Install Claude Code CLI
 RUN npm install -g @anthropic-ai/claude-code
@@ -30,7 +31,7 @@ RUN git config --global user.name "HELIX Demo" \
 # Working directory for the demo project
 WORKDIR /workspace
 
-# Copy the demo script and ddx-library
+# Copy the demo script
 COPY demo.sh /usr/local/bin/demo.sh
 RUN chmod +x /usr/local/bin/demo.sh
 

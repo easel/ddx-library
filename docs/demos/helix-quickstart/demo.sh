@@ -9,6 +9,7 @@
 #
 # Usage:
 #   docker run --rm \
+#     -v ~/.claude.json:/root/.claude.json:ro \
 #     -v ~/.claude:/root/.claude:ro \
 #     -v $(pwd):/ddx-library:ro \
 #     -v $(pwd)/docs/demos/helix-quickstart/recordings:/recordings \
@@ -129,7 +130,9 @@ PROMPT
     --type task --priority 1
   # Add labels (br requires separate label add)
   BEAD_ID=$(br list --json | jq -r '.[0].id')
-  run br label add "$BEAD_ID" helix phase:build story:US-001
+  run br label add -l helix "$BEAD_ID"
+  run br label add -l phase:build "$BEAD_ID"
+  run br label add -l story:US-001 "$BEAD_ID"
 
   narrate "Show the ready queue"
   run br ready
