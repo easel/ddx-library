@@ -1,10 +1,15 @@
 ---
-description: Pick the next bead, implement it, pass tests, commit, close
+name: execute
+description: Pick the next bead, implement it, pass tests, commit, and close it. Use when the user wants one bead executed end-to-end.
+argument-hint: "[bead-id|scope]"
+disable-model-invocation: true
 ---
 
 # Execute
 
 Pick the next bead from the queue, implement it fully, and close it.
+
+If a specific bead or scope is given, use: $ARGUMENTS
 
 ## Steps
 

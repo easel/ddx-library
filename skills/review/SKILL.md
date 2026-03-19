@@ -1,5 +1,7 @@
 ---
-description: Critical review for errors, omissions, and compliance with principles
+name: review
+description: Critical review for errors, omissions, mischaracterizations, and principle compliance. Use when asked to review proposals, plans, specs, research, or any work product.
+argument-hint: "[scope]"
 ---
 
 # Critical Review
@@ -16,6 +18,8 @@ Depending on what was most recently produced or discussed, review:
 - Research output and analysis
 - Specifications and designs
 - Implementation changes
+
+If a scope argument is provided, narrow the review to: $ARGUMENTS
 
 ## Review criteria
 

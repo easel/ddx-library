@@ -1,6 +1,7 @@
 ---
 name: helix-alignment-review
-description: Run a top-down reconciliation review of a HELIX-style project. Use when the user asks to align implementation with planning docs, audit traceability, classify drift across requirements/design/tests/code, generate deterministic review or remediation beads, or produce a consolidated alignment report.
+description: Top-down reconciliation review of a HELIX project. Use for alignment audits, drift analysis, traceability checks, or generating remediation beads.
+argument-hint: "[scope]"
 ---
 
 # HELIX Alignment Review
@@ -27,7 +28,7 @@ Reference docs:
 - Review top-down, not code-first.
 - Planning intent comes from canonical artifacts, not from implementation.
 - Use the HELIX authority order from the references.
-- Use native upstream Beads only: `bd` issues, parents, dependencies, `spec-id`, and labels.
+- Use native upstream Beads only: `bd` (or `br`) issues, parents, dependencies, `spec-id`, and labels.
 - Create or reconcile one review epic plus one review bead per functional area.
 - Create execution beads only after the consolidated report exists.
 

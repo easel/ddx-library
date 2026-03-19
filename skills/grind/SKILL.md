@@ -1,5 +1,7 @@
 ---
-description: Continuous bead queue execution with sub-agents for forward progress
+name: grind
+description: Continuous bead queue execution with sub-agents. Use when the user wants sustained forward progress on the beads queue.
+disable-model-invocation: true
 ---
 
 # Grind

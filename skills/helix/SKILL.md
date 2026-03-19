@@ -1,6 +1,7 @@
 ---
 name: helix-workflow
-description: HELIX is a test-first development workflow with an authority-ordered planning stack and upstream Beads execution tracking. Use when the user mentions HELIX, wants structured TDD guidance, needs help moving through Frame/Design/Test/Build/Deploy/Iterate, wants implementation work aligned to requirements, design, and tests, wants a repo-wide alignment review or traceability audit, or wants to backfill missing HELIX documentation for an existing codebase.
+description: HELIX test-first workflow with authority-ordered planning stack and Beads execution tracking. Use when working through Frame/Design/Test/Build/Deploy/Iterate phases, executing beads, or aligning implementation to specs.
+argument-hint: "[scope|bead-id]"
 ---
 
 # HELIX Workflow Skill
@@ -58,10 +59,10 @@ design.
 
 HELIX uses upstream Beads (`bd`) for execution tracking.
 
-- Use `bd` issues, dependencies, parents, `spec-id`, and labels.
+- Use `bd` (or `br`) issues, dependencies, parents, `spec-id`, and labels.
 - Do not invent custom bead files or custom status taxonomies.
-- Typical labels: `helix`, plus one of `phase:build`, `phase:deploy`,
-  `phase:iterate`, or `phase:review`.
+- Recommended labels: `helix`, plus phase/kind/traceability labels as needed.
+- See `workflows/helix/BEADS.md` for bd/br command mapping.
 
 Reference docs (read as needed):
 
@@ -82,7 +83,7 @@ Start doing real work right now.
 Run this command:
 
 ```bash
-bd ready --label helix --label-any phase:build --label-any phase:deploy --label-any phase:iterate --json
+bd ready --json    # or: br ready --json
 ```
 
 If no ready beads exist, skip to Step 6 (Queue Drain).
@@ -100,7 +101,7 @@ bd dep tree <id>
 Then claim it:
 
 ```bash
-bd update <id> --claim
+bd update <id> --claim    # or: br update <id> --status in_progress
 ```
 
 ### Step 3 — Load context and implement
@@ -121,7 +122,7 @@ verification fails, fix within scope or leave the bead open with a status note.
 ### Step 5 — Commit and close
 
 1. Commit with the bead ID in the message.
-2. Close the bead: `bd close <id>`
+2. Close the bead: `bd close <id>` (or `br close <id>`)
 3. Go back to Step 1 for the next ready bead.
 
 ### Step 6 — Queue drain

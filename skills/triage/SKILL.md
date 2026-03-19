@@ -1,5 +1,7 @@
 ---
-description: Review beads against repo state, improve them, fill gaps
+name: triage
+description: Review beads queue against repo state, improve bead quality, and fill gaps. Use when beads need cleanup, prioritization, or gap analysis.
+disable-model-invocation: true
 ---
 
 # Triage

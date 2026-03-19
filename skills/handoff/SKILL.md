@@ -1,5 +1,6 @@
 ---
-description: Review changes made by another agent or session
+name: handoff
+description: Review changes made by another agent or session. Use when picking up work from a prior session or another agent's output.
 ---
 
 # Handoff Review
