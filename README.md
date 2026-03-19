@@ -6,9 +6,9 @@ This repository contains the DDx (Document-Driven Development eXperience) librar
 
 Full TDD cycle — from empty repo to passing tests — driven by Claude with the HELIX workflow:
 
-[![asciicast](https://asciinema.org/a/5Rkox27li0nWS9uY.svg)](https://asciinema.org/a/5Rkox27li0nWS9uY)
+[![asciicast](https://asciinema.org/a/cPWQIJHw9mH0ryEm.svg)](https://asciinema.org/a/cPWQIJHw9mH0ryEm)
 
-> Planning stack (PRD, user story, design, failing tests) → beads-tracked execution → implementation to green → alignment check. [Run it yourself](docs/demos/helix-quickstart/).
+> Planning stack → Red phase → `/ddx:execute` → Green phase → `/ddx:review` → `/ddx:triage`. [Run it yourself](docs/demos/helix-quickstart/).
 
 ## Installation
 
@@ -27,7 +27,7 @@ Install as a Claude Code plugin in two steps:
 This gives you:
 - **Skills**: `/ddx:helix` (TDD workflow), `/ddx:review` (critical review), `/ddx:grind` (continuous queue execution), `/ddx:execute` (single bead), `/ddx:triage` (queue health), `/ddx:handoff` (agent handoff review), `/ddx:helix-alignment-review` (drift analysis)
 - **Commands**: `/ddx:prd`, `/ddx:code-review`, `/ddx:commit-hooks`, `/ddx:github-actions`, `/ddx:docs`, `/ddx:gitignore`, `/ddx:create-workflow`
-- **Agents**: Systems architect, TDD test engineer, strict code reviewer
+- **Agents**: Systems architect, TDD test engineer, strict code reviewer, QA analyst
 
 ## Contents
 
@@ -36,12 +36,8 @@ This gives you:
 - **agents/** - Specialized Claude Code agents
 - **prompts/** - AI prompts and instructions for various development tasks
 - **personas/** - AI personality definitions for consistent interactions
-- **mcp-servers/** - Model Context Protocol server configurations
 - **workflows/** - Complete development methodologies (HELIX, etc.)
-- **environments/** - Development environment configurations
-- **tools/** - Development tool integrations and scripts
-- **templates/** - Project templates and boilerplates
-- **patterns/** - Reusable code patterns and solutions
+- **docs/demos/** - Reproducible demo recordings ([HELIX quickstart](docs/demos/helix-quickstart/))
 
 ## Contributing
 

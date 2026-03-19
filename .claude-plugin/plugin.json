@@ -9,5 +9,6 @@
   "repository": "https://github.com/easel/ddx-library",
   "license": "MIT",
   "commands": "./commands/",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "agents": "./agents/"
 }

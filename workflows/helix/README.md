@@ -6,7 +6,7 @@ dun:
 
 A test-driven development workflow with AI-assisted collaboration for building high-quality software iteratively.
 
-> **Quick Links**: [Quick Start Guide](QUICKSTART.md) | [Visual Overview](diagrams/workflow-overview.md) | [Reference Card](REFERENCE.md) | [Execution Guide](EXECUTION.md) | [Artifact Flow](diagrams/artifact-flow.md) | [Beads Integration](BEADS.md)
+> **Quick Links**: [Quick Start Guide](QUICKSTART.md) | [Visual Overview](diagrams/workflow-overview.md) | [Reference Card](REFERENCE.md) | [Execution Guide](EXECUTION.md) | [Artifact Flow](diagrams/artifact-flow.md) | [Beads Integration](BEADS.md) | [Quality Ratchets](ratchets.md)
 
 ## Overview
 

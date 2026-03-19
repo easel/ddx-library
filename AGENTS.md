@@ -44,6 +44,21 @@ Key rules:
   enforcement scripts and floor fixtures belong in adopting projects, not in
   this repo. This repo defines the pattern and the integration points in
   action prompts and enforcers.
+- Both `bd` and `br` (Beads Rust) are supported. See `workflows/helix/BEADS.md`
+  for the command mapping. The queue guard uses `ready --json | jq 'length'`
+  which works identically with either tool.
+
+## DDx Skills
+
+The plugin provides these skills (invocable as `/ddx:<name>`):
+
+- `/ddx:helix` — HELIX workflow execution (auto-invoked on context)
+- `/ddx:review` — critical review for errors, omissions, compliance
+- `/ddx:grind` — continuous bead queue execution with sub-agents
+- `/ddx:execute` — pick next bead, implement, test, commit, close
+- `/ddx:triage` — review beads vs repo state, improve and fill gaps
+- `/ddx:handoff` — review changes made by another agent/session
+- `/ddx:helix-alignment-review` — top-down reconciliation and drift analysis
 
 ## HELIX CLI
 
@@ -238,7 +253,7 @@ bd dolt pull
 - ❌ Do NOT use external issue trackers
 - ❌ Do NOT duplicate tracking systems
 
-For more details, see README.md and docs/QUICKSTART.md.
+For more details, see README.md and `workflows/helix/BEADS.md`.
 
 ## Landing the Plane (Session Completion)
 

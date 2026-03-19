@@ -2,10 +2,11 @@
 # HELIX Quickstart Demo — scripted asciinema recording
 #
 # This script drives a full HELIX cycle on a tiny Node.js project:
-#   1. Setup: init repo, install ddx plugin, init beads
-#   2. Planning: create PRD, user story, technical design, test plan
-#   3. Execution: create beads, run helix implement, show TDD cycle
-#   4. Alignment: run helix check and helix align
+#   1. Setup: install br, init repo, init beads, verify ddx plugin
+#   2. Planning: create PRD, user story, technical design, test plan (Red)
+#   3. Execution: /ddx:execute drives bead implementation (Green)
+#   4. Review: /ddx:review critically reviews the work product
+#   5. Triage: /ddx:triage assesses queue health and gaps
 #
 # Usage:
 #   docker run --rm \
@@ -37,6 +38,11 @@ run() {
   sleep 1
 }
 
+# Run claude with plugin and standard flags
+claude_run() {
+  claude --plugin-dir /ddx-library -p --no-session-persistence "$@"
+}
+
 demo_body() {
   # ── ACT 1: Setup ──────────────────────────────────────────
   narrate "ACT 1: Project Setup"
@@ -55,8 +61,7 @@ demo_body() {
   narrate "Initialize beads workspace"
   run br init
 
-  narrate "Install the DDx Library plugin"
-  # Copy plugin into the project's claude config so skills are available
+  narrate "Verify DDx plugin loads"
   mkdir -p .claude
   cat > .claude/settings.json <<'SETTINGS'
 {
@@ -65,15 +70,14 @@ demo_body() {
   }
 }
 SETTINGS
-  # Link ddx-library as a local plugin
-  run claude --plugin-dir /ddx-library -p --no-session-persistence \
-    "Say 'DDx plugin loaded' and list the available /ddx: slash commands. Be brief."
+  run claude_run \
+    "Say 'DDx plugin loaded' and list the available /ddx: skills. Be brief."
 
   # ── ACT 2: Planning Stack ────────────────────────────────
   narrate "ACT 2: Build the Planning Stack"
 
   narrate "Create the project PRD"
-  run claude --plugin-dir /ddx-library -p --no-session-persistence <<'PROMPT'
+  run claude_run <<'PROMPT'
 Create a minimal PRD for "hello-helix", a Node.js CLI tool that converts
 temperatures between Fahrenheit and Celsius.
 
@@ -87,7 +91,7 @@ Keep it short — this is a demo project.
 PROMPT
 
   narrate "Create a user story with acceptance criteria"
-  run claude --plugin-dir /ddx-library -p --no-session-persistence <<'PROMPT'
+  run claude_run <<'PROMPT'
 Read docs/helix/01-frame/prd.md, then create a user story at
 docs/helix/01-frame/user-stories/US-001-temperature-conversion.md.
 
@@ -99,7 +103,7 @@ Keep it concise.
 PROMPT
 
   narrate "Create a technical design"
-  run claude --plugin-dir /ddx-library -p --no-session-persistence <<'PROMPT'
+  run claude_run <<'PROMPT'
 Read the PRD and user story under docs/helix/01-frame/, then create a
 technical design at docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md.
 
@@ -108,7 +112,7 @@ Design a single bin/convert.js entry point that parses --to-celsius and
 PROMPT
 
   narrate "Create a test plan with failing tests"
-  run claude --plugin-dir /ddx-library -p --no-session-persistence <<'PROMPT'
+  run claude_run <<'PROMPT'
 Read the user story at docs/helix/01-frame/user-stories/US-001-temperature-conversion.md
 and the technical design at docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md.
 
@@ -137,13 +141,12 @@ PROMPT
   echo "Tests fail as expected — this is the Red phase of TDD."
   sleep 2
 
-  # ── ACT 3: Execution ────────────────────────────────────
-  narrate "ACT 3: Beads-Driven Execution"
+  # ── ACT 3: Execution via /ddx:execute ───────────────────
+  narrate "ACT 3: /ddx:execute — Bead-Driven Implementation"
 
-  narrate "Create an execution bead from the planning stack"
+  narrate "Create an execution bead"
   run br create "Implement US-001: temperature conversion CLI" \
     --type task --priority 1
-  # Add labels (br requires separate label add)
   BEAD_ID=$(br list --json | jq -r '.[0].id')
   run br label add -l helix "$BEAD_ID"
   run br label add -l phase:build "$BEAD_ID"
@@ -152,24 +155,17 @@ PROMPT
   narrate "Show the ready queue"
   run br ready
 
-  narrate "Implement — make the tests pass (Green phase)"
-  run claude --plugin-dir /ddx-library -p --no-session-persistence <<PROMPT
-You are performing a HELIX implementation pass.
+  narrate "Execute the bead — /ddx:execute"
+  run claude_run <<PROMPT
+Use the /ddx:execute skill. The beads CLI is "br" (not "bd").
 
-Read the governing artifacts:
+The ready bead is $BEAD_ID. Read its governing artifacts:
 - docs/helix/01-frame/user-stories/US-001-temperature-conversion.md
 - docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md
-- docs/helix/03-test/test-plans/TP-001-temperature-conversion.md
 - tests/convert.test.js
 
-Write ONLY the implementation code needed to make the failing tests pass.
-Follow the technical design. Do not modify the tests.
-
-After writing the code, run "npm test" to verify all tests pass.
-Commit the working code with message: "feat: implement temperature conversion CLI
-
-Bead: $BEAD_ID
-Governing: US-001, TD-001, TP-001"
+Implement the code to make tests pass. Run "npm test" to verify.
+Commit with the bead ID. Close the bead with "br close $BEAD_ID".
 PROMPT
 
   narrate "Verify tests pass (Green phase)"
@@ -182,34 +178,41 @@ PROMPT
   fi
   sleep 2
 
-  narrate "Close the bead"
-  run br close "$BEAD_ID"
+  # ── ACT 4: Critical Review via /ddx:review ──────────────
+  narrate "ACT 4: /ddx:review — Critical Review"
 
-  narrate "Show the CLI works"
-  node bin/convert.js --to-celsius 212 2>/dev/null && run node bin/convert.js --to-celsius 212 || echo "(CLI output depends on implementation structure)"
-  node bin/convert.js --to-fahrenheit 0 2>/dev/null && run node bin/convert.js --to-fahrenheit 0 || true
-  node bin/convert.js --to-celsius 98.6 2>/dev/null && run node bin/convert.js --to-celsius 98.6 || true
+  run claude_run <<'PROMPT'
+Use the /ddx:review skill.
 
-  # ── ACT 4: Alignment ───────────────────────────────────
-  narrate "ACT 4: Alignment Check"
+Review all artifacts created in this project:
+- docs/helix/01-frame/ (PRD, user story)
+- docs/helix/02-design/ (technical design)
+- docs/helix/03-test/ (test plan)
+- The implementation in bin/
 
-  narrate "Check queue health"
-  run claude --plugin-dir /ddx-library -p --no-session-persistence <<'PROMPT'
-Use the HELIX check action at /ddx-library/workflows/helix/actions/check.md.
+Check for errors, omissions, mischaracterizations, and whether the
+implementation matches the specs. Be concise.
+PROMPT
 
-Inspect this repository. The beads CLI is "br" (not "bd").
-Return the required NEXT_ACTION line and the exact next command.
+  # ── ACT 5: Triage via /ddx:triage ──────────────────────
+  narrate "ACT 5: /ddx:triage — Queue Health"
+
+  run claude_run <<'PROMPT'
+Use the /ddx:triage skill. The beads CLI is "br" (not "bd").
+
+Review the beads queue against the current state of this repository.
+Are there gaps? Is follow-on work needed? Create beads for any gaps.
 Be concise.
 PROMPT
 
   narrate "Demo complete!"
   echo ""
   echo "What you just saw:"
-  echo "  1. Created a planning stack (PRD → User Story → Design → Test Plan)"
-  echo "  2. Wrote failing tests BEFORE implementation (Test-First)"
-  echo "  3. Tracked execution with beads issue tracker"
-  echo "  4. Implemented code to pass the tests (TDD Green phase)"
-  echo "  5. Checked queue health with HELIX alignment"
+  echo "  1. Planning stack: PRD → User Story → Design → Test Plan"
+  echo "  2. Red phase: failing tests written BEFORE implementation"
+  echo "  3. /ddx:execute: bead-tracked implementation to Green"
+  echo "  4. /ddx:review: critical review for errors and compliance"
+  echo "  5. /ddx:triage: queue health and gap analysis"
   echo ""
   echo "All artifacts are traced. All work is tracked. All specs govern code."
   echo ""
