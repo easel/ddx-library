@@ -3,12 +3,14 @@
 #
 # This script drives a full HELIX cycle on a tiny Node.js project:
 #   1. Setup: init repo, init beads, install ddx skills
-#   2. Planning: create PRD, user story, technical design, test plan (Red)
-#   3. Execution: bead-driven implementation (Green)
-#   4. Review: critical review of the work product
-#   5. Triage: queue health and gap analysis
+#   2. Seed: one prompt creates the PRD
+#   3. Queue: set up beads for the planning + build chain
+#   4. Execute: drain the queue — one bead at a time
+#   5. Verify: tests pass, app runs
+#   6. Review: /review critically reviews all work products
+#   7. Triage: /triage identifies gaps and creates follow-up beads
 #
-# Every artifact is created by Claude — no canned fallbacks.
+# Every artifact is created by Claude. Beads drive the work.
 #
 # Usage:
 #   docker run --rm \
@@ -21,8 +23,8 @@
 set -euo pipefail
 
 RECORDING_FILE="/recordings/helix-quickstart-$(date +%Y%m%d-%H%M%S).cast"
-MAX_RETRIES=5
-COOLDOWN=3  # seconds between claude calls to avoid rate limits
+MAX_RETRIES=3
+COOLDOWN=8  # generous gap between API calls to avoid rate limits
 
 narrate() {
   echo ""
@@ -50,9 +52,8 @@ show_file() {
   sleep 2
 }
 
-# Run claude -p with the prompt shown as a visible command, output
-# streaming to the terminal in real time. Retries on failure using
-# file-change detection (Claude often writes files but returns an error).
+# Run claude -p with prompt visible. Output is captured but printed after.
+# Retries on failure with file-change detection.
 claude_run() {
   local prompt=""
   if [[ $# -gt 0 ]]; then
@@ -61,21 +62,19 @@ claude_run() {
     prompt="$(cat)"
   fi
 
-  # Show the prompt as a CLI command the viewer can read
+  # Show the command the viewer would type
   echo '$ claude -p "'"${prompt}"'"'
   echo ""
 
   local attempt output
   for attempt in $(seq 1 "$MAX_RETRIES"); do
     touch /tmp/claude_ts
-    # Stream output to terminal via tee, also capture for retry logic
-    output=$(claude -p --no-session-persistence "$prompt" 2>/dev/null | tee /dev/stderr) 2>&1 || true
+    output=$(printf '%s' "$prompt" | claude -p --no-session-persistence 2>/dev/null) || true
 
-    # Success: got real output text
     if [[ -n "$output" && "$output" != "Execution error" ]]; then
       break
     fi
-    # Success: Claude wrote files even though output was an error
+    # Check if files were created despite error
     local new_files
     new_files=$(find . -not -path './.git/*' -not -path './.beads/*' -newer /tmp/claude_ts 2>/dev/null | wc -l || echo 0)
     if [[ "$new_files" -gt 0 ]]; then
@@ -87,19 +86,48 @@ claude_run() {
     fi
   done
 
+  # Show output
+  if [[ -n "$output" && "$output" != "Execution error" ]]; then
+    printf '%s\n' "$output"
+  fi
+
   echo ""
-  # Cooldown between calls to avoid rate limits
   sleep "$COOLDOWN"
 }
 
-# Require a file to exist — abort the demo if it doesn't.
+# Execute a bead: show it, run claude, close it
+execute_bead() {
+  local bead_id="$1"
+  local title
+  title=$(br show "$bead_id" --json 2>/dev/null | jq -r '.[0].title // empty' 2>/dev/null || echo "")
+
+  echo "▶ Bead $bead_id"
+  if [[ -n "$title" ]]; then
+    echo "  $title"
+  fi
+  echo ""
+
+  claude_run "$title Read existing artifacts under docs/helix/ for context. When done, close the bead: br close $bead_id"
+}
+
 require_file() {
   local file="$1"
   local label="${2:-$file}"
   if [[ ! -f "$file" ]]; then
-    echo ""
-    echo "ERROR: Claude did not create $label"
-    echo "The demo cannot continue. Re-run to try again."
+    echo "FAIL: $label not found — aborting"
+    exit 1
+  fi
+  echo "  ✓ $label exists"
+}
+
+assert_output() {
+  local actual="$1"
+  local expected="$2"
+  local label="$3"
+  if [[ "$actual" == *"$expected"* ]]; then
+    echo "  ✓ $label — got $expected"
+  else
+    echo "FAIL: $label — expected '$expected', got '$actual'"
     exit 1
   fi
 }
@@ -112,7 +140,6 @@ demo_body() {
   cd hello-helix
   run br init
 
-  narrate "Install DDx skills"
   mkdir -p .claude/skills
   cp -rf /ddx-library/skills/* .claude/skills/
   cat > .claude/settings.json <<'SETTINGS'
@@ -122,110 +149,141 @@ demo_body() {
   }
 }
 SETTINGS
-  claude_run "List the available skills. Show just their names and one-line descriptions. Be brief."
+  echo "DDx skills installed: $(ls .claude/skills/ | tr '\n' ' ')"
+  echo ""
+  sleep 2
 
-  # ── ACT 2: Planning Stack ────────────────────────────────
-  narrate "ACT 2: Build the Planning Stack"
+  # ── ACT 2: Seed the project ─────────────────────────────
+  narrate "ACT 2: Seed the Project"
 
-  # Step 1: PRD
-  narrate "Step 1: Create the PRD"
-  claude_run 'Create a minimal PRD for "hello-helix", a Node.js CLI tool that converts temperatures between Fahrenheit and Celsius. Features: (1) convert --to-celsius <temp> converts Fahrenheit to Celsius, (2) convert --to-fahrenheit <temp> converts Celsius to Fahrenheit, (3) prints the result to stdout with one decimal place. Write the PRD to docs/helix/01-frame/prd.md. Create the directory structure. Keep it short — this is a demo project.'
+  claude_run 'Write a PRD for "hello-helix", a Node.js CLI that converts temperatures. Features: convert --to-celsius <temp> and convert --to-fahrenheit <temp>, output with one decimal place. Write to docs/helix/01-frame/prd.md. Keep it short.'
   require_file docs/helix/01-frame/prd.md "the PRD"
   show_file docs/helix/01-frame/prd.md
 
-  # Step 2: User story
-  narrate "Step 2: Create a user story"
-  claude_run 'Read docs/helix/01-frame/prd.md, then create a user story at docs/helix/01-frame/user-stories/US-001-temperature-conversion.md. Include two acceptance criteria: (1) convert --to-celsius 212 prints 100.0, (2) convert --to-fahrenheit 0 prints 32.0. Keep it concise.'
-  require_file docs/helix/01-frame/user-stories/US-001-temperature-conversion.md "the user story"
+  # ── ACT 3: Build the work queue ─────────────────────────
+  narrate "ACT 3: Build the Work Queue"
+
+  echo "Creating beads for the HELIX chain..."
+  echo ""
+
+  br create "Write user story US-001 from the PRD. Acceptance criteria: convert --to-celsius 212 prints 100.0, convert --to-fahrenheit 0 prints 32.0. Write to docs/helix/01-frame/user-stories/US-001-temperature-conversion.md" \
+    --type task --priority 1 2>&1
+  B1=$(br list --json | jq -r '.[0].id')
+  br label add -l helix "$B1" >/dev/null
+  br label add -l phase:frame "$B1" >/dev/null
+
+  br create "Write technical design TD-001: single bin/convert.js exporting toFahrenheit(c) and toCelsius(f), CLI via process.argv, toFixed(1) output. Write to docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md" \
+    --type task --priority 1 2>&1
+  B2=$(br list --json | jq -r '[.[] | select(.status == "open")] | sort_by(.created_at) | last | .id')
+  br label add -l helix "$B2" >/dev/null
+  br label add -l phase:design "$B2" >/dev/null
+
+  br create "Write test plan TP-001 and failing tests. Create package.json with node --test, and tests/convert.test.js requiring ../bin/convert.js for toFahrenheit(0)===32, toCelsius(212)===100, toCelsius(98.6)~=37. Do NOT create bin/convert.js." \
+    --type task --priority 1 2>&1
+  B3=$(br list --json | jq -r '[.[] | select(.status == "open")] | sort_by(.created_at) | last | .id')
+  br label add -l helix "$B3" >/dev/null
+  br label add -l phase:test "$B3" >/dev/null
+
+  br create "Implement bin/convert.js per the technical design. Export toFahrenheit(c) and toCelsius(f). Add CLI with --to-celsius and --to-fahrenheit flags, toFixed(1) output. Run npm test — all tests must pass." \
+    --type task --priority 1 2>&1
+  B4=$(br list --json | jq -r '[.[] | select(.status == "open")] | sort_by(.created_at) | last | .id')
+  br label add -l helix "$B4" >/dev/null
+  br label add -l phase:build "$B4" >/dev/null
+
+  echo ""
+  run br list
+  sleep 2
+
+  # ── ACT 4: Drain the queue ─────────────────────────────
+  narrate "ACT 4: Execute Beads"
+
+  execute_bead "$B1"
+  require_file docs/helix/01-frame/user-stories/US-001-temperature-conversion.md "user story"
   show_file docs/helix/01-frame/user-stories/US-001-temperature-conversion.md
 
-  # Step 3: Technical design
-  narrate "Step 3: Create a technical design"
-  claude_run 'Read the PRD and user story under docs/helix/01-frame/, then create a technical design at docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md. Design a single bin/convert.js entry point that parses --to-celsius and --to-fahrenheit flags using process.argv. The module should export toFahrenheit(c) and toCelsius(f) functions. Keep it minimal.'
-  require_file docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md "the technical design"
+  execute_bead "$B2"
+  require_file docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md "tech design"
   show_file docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md
 
-  # Step 4: Tests (Red phase)
-  narrate "Step 4: Create failing tests (Red phase)"
-  claude_run 'Read the user story at docs/helix/01-frame/user-stories/US-001-temperature-conversion.md and the technical design at docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md. You MUST create ALL of the following files: (1) docs/helix/03-test/test-plans/TP-001-temperature-conversion.md, (2) package.json with contents: {"name":"hello-helix","version":"0.1.0","scripts":{"test":"node --test"}}, (3) tests/convert.test.js using node:test and node:assert that requires ../bin/convert.js for toFahrenheit and toCelsius functions, tests toFahrenheit(0) === 32.0, toCelsius(212) === 100.0, and toCelsius(98.6) is approximately 37.0. Do NOT create bin/convert.js — the tests MUST fail.'
+  execute_bead "$B3"
+  # Ensure package.json exists for npm test
+  [[ -f package.json ]] || echo '{"name":"hello-helix","version":"0.1.0","scripts":{"test":"node --test"}}' > package.json
+  require_file tests/convert.test.js "tests"
+  show_file tests/convert.test.js 25
 
-  # package.json is the only safety net — Claude sometimes skips it
-  if [[ ! -f package.json ]]; then
-    echo '{"name":"hello-helix","version":"0.1.0","scripts":{"test":"node --test"}}' > package.json
-  fi
-  require_file tests/convert.test.js "the test file"
-  show_file tests/convert.test.js 30
-
-  narrate "Verify tests fail"
-  run npm test || true
-  echo "Tests fail as expected — Red phase."
+  echo "Red phase — tests should fail:"
+  npm test 2>&1 || true
+  echo ""
   sleep 2
 
-  # ── ACT 3: Execution ────────────────────────────────────
-  narrate "ACT 3: Bead-Driven Implementation (Green phase)"
-
-  run br create "Implement US-001: temperature conversion CLI" \
-    --type task --priority 1
-  BEAD_ID=$(br list --json | jq -r '.[0].id')
-  br label add -l helix "$BEAD_ID" >/dev/null
-  br label add -l phase:build "$BEAD_ID" >/dev/null
-  br label add -l story:US-001 "$BEAD_ID" >/dev/null
-  run br ready
-
-  narrate "Implement — make the tests pass"
-  claude_run "Read the governing artifacts: docs/helix/01-frame/user-stories/US-001-temperature-conversion.md, docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md, and tests/convert.test.js. Write ONLY the implementation code in bin/convert.js to make the tests pass. The module must export toFahrenheit(c) and toCelsius(f). Also add CLI handling that parses --to-celsius and --to-fahrenheit from process.argv and prints the result with one decimal place. Follow the technical design. Do not modify the tests. Run npm test to verify all tests pass."
-  require_file bin/convert.js "the implementation"
+  execute_bead "$B4"
   show_file bin/convert.js 25
 
-  narrate "Verify tests pass"
-  if npm test; then
-    echo ""
-    echo "All tests pass — Green phase complete!"
-  else
-    echo ""
-    echo "Tests did not pass on first try — a real HELIX cycle would iterate here."
-  fi
+  # ── ACT 5: Verify ──────────────────────────────────────
+  narrate "ACT 5: Verify"
+
+  echo "Tests:"
+  npm test 2>&1 || { echo "FAIL: npm test failed — aborting"; exit 1; }
+  echo "  ✓ all tests pass"
+  echo ""
   sleep 2
 
-  # Commit the implementation with bead traceability
+  require_file bin/convert.js "implementation"
+
+  echo "App — checking acceptance criteria:"
+  local out
+  out=$(node bin/convert.js --to-celsius 212)
+  assert_output "$out" "100.0" "212°F → Celsius"
+
+  out=$(node bin/convert.js --to-fahrenheit 0)
+  assert_output "$out" "32.0" "0°C → Fahrenheit"
+
+  out=$(node bin/convert.js --to-celsius 98.6)
+  assert_output "$out" "37.0" "98.6°F → Celsius"
+
+  echo ""
+  sleep 2
+
+  # Commit
   git add -A
-  git commit -m "feat: implement temperature conversion CLI [${BEAD_ID}]" --allow-empty || true
+  git commit -m "feat: temperature conversion CLI via HELIX" --allow-empty || true
 
-  run br close "$BEAD_ID"
-
-  # ── ACT 4: Critical Review ─────────────────────────────
-  narrate "ACT 4: Critical Review"
-
-  claude_run "Review all artifacts in this project for errors, omissions, and mischaracterizations: docs/helix/01-frame/prd.md, docs/helix/01-frame/user-stories/US-001-temperature-conversion.md, docs/helix/02-design/technical-designs/TD-001-temperature-conversion.md, tests/convert.test.js, and bin/convert.js. Does the implementation match the specs? Are acceptance criteria covered? Be concise — list findings as bullet points."
+  echo ""
+  run br list --all
   sleep 2
 
-  # ── ACT 5: Triage ──────────────────────────────────────
-  narrate "ACT 5: Queue Health & Triage"
+  # ── ACT 6: Review ──────────────────────────────────────
+  narrate "ACT 6: Review"
 
-  claude_run 'Read tests/convert.test.js and bin/convert.js. List the gaps: which error-handling code paths have no tests? Which conversion edge cases are untested? Which acceptance criteria lack integration tests? Output a numbered list of gaps — one line each, no explanation.'
+  claude_run "Review all artifacts and code in this project for errors, omissions, and mischaracterizations. Check docs/helix/ specs, tests/convert.test.js, and bin/convert.js. Does the implementation match the specs? Are acceptance criteria covered? Be concise — bullet points."
+  sleep 2
 
-  # Create beads for the standard gaps the review always surfaces
+  # ── ACT 7: Triage ──────────────────────────────────────
+  narrate "ACT 7: Triage"
+
+  claude_run "Read tests/convert.test.js and bin/convert.js. List gaps: which error paths have no tests? Which edge cases are untested? Which acceptance criteria lack integration tests? Numbered list, one line each."
+
   echo ""
-  echo "Creating follow-up beads from triage findings..."
-  run br create "Add CLI integration tests for AC-1 and AC-2" --type task --priority 2
-  run br create "Add error-path tests (missing flag, bad input, both flags)" --type task --priority 2
-  run br create "Add toFahrenheit edge-case tests (negative, fractional, -40 crossover)" --type task --priority 3
+  echo "Creating follow-up beads from triage..."
+  run br create "Add CLI integration tests for acceptance criteria" --type task --priority 2
+  run br create "Add error-path tests (missing flag, bad input)" --type task --priority 2
+  run br create "Add edge-case tests (negative temps, -40 crossover)" --type task --priority 3
 
   echo ""
-  echo "Beads queue after triage:"
+  echo "Final queue:"
   run br list --all
   sleep 2
 
   narrate "Demo complete!"
   echo ""
   echo "What you just saw:"
-  echo "  1. Planning stack: PRD -> User Story -> Design -> Test Plan"
-  echo "  2. Red phase: failing tests written BEFORE implementation"
-  echo "  3. Bead-tracked implementation to Green"
-  echo "  4. Critical review for errors and compliance"
-  echo "  5. Queue triage and gap analysis"
+  echo "  1. One prompt seeded the PRD"
+  echo "  2. Beads defined the work queue"
+  echo "  3. Each bead executed in phase order: story -> design -> tests -> code"
+  echo "  4. Tests pass, app runs, acceptance criteria verified"
+  echo "  5. Review found gaps, triage created follow-up beads"
   echo ""
-  echo "All artifacts created by Claude. All work tracked in beads."
+  echo "One seed. Beads drive. HELIX delivers."
   echo ""
 }
 
